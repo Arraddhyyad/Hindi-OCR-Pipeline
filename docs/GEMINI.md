@@ -1,0 +1,4 @@
+# Using real Gemini calls
+Two places call Gemini; both are async, with a concurrency semaphore, retry/backoff that honours "retry in Ns", and a disk cache.
+1. **Text writing** — `step2_text.GeminiWriter.awrite(graph, seed, target_words)` returns paragraphs as JSON; the result is fact-checked and retried with the missing facts listed. Tested only against a fake client (`tests/test_gemini_writer.py`). The CLI does not yet drive it (the orchestrator calls a sync `writer.write`); to use it, wrap `awrite` in a sync adapter or batch the writing step before rendering. The model name in the config (`gemini-3.8-flash`) is **unverified** — set one that exists on your key.
+2. **OCR read-back** — `python main.py evaluate --run-id X --ocr gemini --model <name>` with `GEMINI_API_KEY` set. Run it first with `--clean` (reads the aligned clean target): if Gemini cannot read the clean page, fix the renderer/labels before blaming the damage.

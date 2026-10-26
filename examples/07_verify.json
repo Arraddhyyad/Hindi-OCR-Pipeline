@@ -1,0 +1,84 @@
+{
+ "id": "doc_0000010",
+ "pass": true,
+ "checks": {
+  "facts_present": {
+   "pass": true,
+   "detail": "20 facts"
+  },
+  "amount_words_parse": {
+   "pass": true,
+   "detail": "amount=450000 parsed from words=[450000]"
+  },
+  "amount_digits": {
+   "pass": true,
+   "detail": "expected one of ['4,50,000', '४,५०,०००']"
+  },
+  "labels_match_text": {
+   "pass": true,
+   "detail": "label words=324 transcript_scored=324 body 281/281"
+  },
+  "fill_in_range": {
+   "pass": true,
+   "detail": "fill=0.956 want 0.9-0.965 status=ok"
+  },
+  "boxes_in_page": {
+   "pass": true,
+   "detail": "off-page=0 overlapping=0"
+  },
+  "composition_valid": {
+   "pass": true,
+   "detail": "unknown assets=[] elements without polygon=0"
+  },
+  "folded_and_torn": {
+   "pass": true,
+   "detail": "ops=13 severity=medium"
+  },
+  "polygons_valid": {
+   "pass": true,
+   "detail": "0 bad polygons"
+  },
+  "boxes_on_ink_target": {
+   "pass": true,
+   "detail": "aligned 0.979 of 188 words (need 0.9); shifted-control 0.0",
+   "rate": 0.9787234042553191,
+   "n": 188,
+   "control_rate": 0.0
+  },
+  "boxes_on_ink_final": {
+   "pass": true,
+   "detail": "aligned 0.926 of 188 words (need 0.6); shifted-control 0.0",
+   "rate": 0.925531914893617,
+   "n": 188,
+   "control_rate": 0.0
+  }
+ },
+ "meta": {
+  "size": [
+   1113,
+   1569
+  ],
+  "font": "Gargi",
+  "severity": "medium",
+  "fill": 0.956,
+  "header": "banner",
+  "footer": "endorsement",
+  "stamps": 3,
+  "ops": [
+   "ink_dilate",
+   "augraphy.LowInkRandomLines",
+   "ink_blots",
+   "folds",
+   "augraphy.BleedThrough",
+   "torn_edge",
+   "rotate",
+   "perspective",
+   "lighting_gradient",
+   "dust_specks",
+   "resample",
+   "noise",
+   "jpeg"
+  ],
+  "transcript_sha": "9b4261e34cdd"
+ }
+}

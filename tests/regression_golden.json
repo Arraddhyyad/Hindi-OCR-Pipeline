@@ -1,0 +1,844 @@
+{
+ "env": {
+  "python": "3.11.15",
+  "platform": "Linux-6.18.44-fc-v114-x86_64-with-glibc2.39",
+  "numpy": "2.4.4",
+  "cv2": "4.13.0",
+  "PIL": "12.2.0",
+  "augraphy": "8.2.6",
+  "playwright": "?",
+  "yaml": "6.0.3",
+  "rapidfuzz": "3.14.6",
+  "google.genai": "2.29.0",
+  "fontlist_md5": "ab39a6cd15257b8ca0a0da2a40738824"
+ },
+ "seeds": {
+  "config/hindi_sale_deed.yaml": [
+   0,
+   1,
+   2,
+   3,
+   5,
+   7,
+   8,
+   9,
+   10,
+   20,
+   24
+  ],
+  "config/hindi_sale_deed_v1_reference.yaml": [
+   0,
+   1,
+   3,
+   5,
+   8,
+   10
+  ]
+ },
+ "flags_A": [
+  "--disable-gpu",
+  "--disable-lcd-text",
+  "--disable-font-subpixel-positioning",
+  "--num-raster-threads=1"
+ ],
+ "files_A": {
+  "config/hindi_sale_deed.yaml": {
+   "dataset/test/doc_0000020.json": "4698a441a172ea5538a69be05db02aac",
+   "dataset/test/doc_0000020.png": [
+    1274,
+    1675
+   ],
+   "dataset/test/doc_0000020_target.png": "378231cbecdecba9ea4e573a5c8a080a",
+   "dataset/train/doc_0000000.json": "3b466d638b0e87f5473c06190d246fe4",
+   "dataset/train/doc_0000000.png": "7483bd797aa3f961250de1421758eb4f",
+   "dataset/train/doc_0000000_target.png": "b276a781898aaed9d9970f6755c1cfc3",
+   "dataset/train/doc_0000001.json": "6cdfa5b65f104f9cdb1b7b6896be53fd",
+   "dataset/train/doc_0000001.png": "57f91ff064ed83c166dae650d5c9cd5d",
+   "dataset/train/doc_0000001_target.png": "5ff063d58ed669323112b1a9cd71826b",
+   "dataset/train/doc_0000002.json": "f3a07ecf6b856f1837e9c416b2c8c4fb",
+   "dataset/train/doc_0000002.png": "28406887db61c982794f37bf7b905c2a",
+   "dataset/train/doc_0000002_target.png": "97e015189813ff4d2e5a4c53762e05f0",
+   "dataset/train/doc_0000003.json": "8c063bcd2b470f117e1908f173bec72c",
+   "dataset/train/doc_0000003.png": "f59cf45a80c2eec73c268f8d4c3b3870",
+   "dataset/train/doc_0000003_target.png": "13890604b44c3c018a7a8f64608804c6",
+   "dataset/train/doc_0000007.json": "c8d61161a30f431a00841745c40e7098",
+   "dataset/train/doc_0000007.png": "1c2e54548d0d9ac717653378fa9386f4",
+   "dataset/train/doc_0000007_target.png": "c5bb47873844b81442f0c2f2e79a0f45",
+   "dataset/train/doc_0000008.json": "5ec940fa9a1d1cf66ebf2f48d41d6f4b",
+   "dataset/train/doc_0000008.png": "d4f708ed8e2f71adc0c87523b8aebda5",
+   "dataset/train/doc_0000008_target.png": "13a8ffc225bd6696b63a4783f2c163af",
+   "dataset/train/doc_0000009.json": "fa648c2d13a798070d839ee0f371da84",
+   "dataset/train/doc_0000009.png": "32cdab8b4a82ff7b0b992f4af4ded151",
+   "dataset/train/doc_0000009_target.png": "ce1f11d86589e85e96296ddd980d627b",
+   "dataset/train/doc_0000010.json": "e5da0eb9cd20203441ef91e608574425",
+   "dataset/train/doc_0000010.png": "d18708cb5152cf48e5500144a5f5d617",
+   "dataset/train/doc_0000010_target.png": "df057d668bb36e174eb2fabb383a5e2f",
+   "dataset/train/doc_0000024.json": "0277b1a5fb7cd2078a22e7bbe8832090",
+   "dataset/train/doc_0000024.png": "aa646517b243021e6d39b7a52d350080",
+   "dataset/train/doc_0000024_target.png": "ae3ce7a7ca743aa4842c5560e8d6c63b",
+   "dataset/val/doc_0000005.json": "5a37cac81adf3eae81f046f123a72b70",
+   "dataset/val/doc_0000005.png": "4bd5709cdeded882fb15254292289855",
+   "dataset/val/doc_0000005_target.png": "11138ea669606e72ad0babd4246bd516",
+   "pages/doc_0000000/01_entities.json": "8c62364fe0f95987297baa73dd3ee085",
+   "pages/doc_0000000/02_text.json": "2559cd04c808696447dfce48989d7494",
+   "pages/doc_0000000/03_layout.json": "1b0d9a253c8cc80e5bc420bd8871cb9d",
+   "pages/doc_0000000/03_layout.png": "c9c81f19311cdedd887a1fdac13056de",
+   "pages/doc_0000000/04_composed.json": "7e0cf0a7190cba872e52b4ff7ab638b2",
+   "pages/doc_0000000/04_composed.png": "a9f42f34200a5083bfb4581d1e8a04ed",
+   "pages/doc_0000000/05_degraded.json": "55e2b3dfaf6050888e14ed66a1c1e106",
+   "pages/doc_0000000/05_degraded.png": "7483bd797aa3f961250de1421758eb4f",
+   "pages/doc_0000000/05_target.png": "b276a781898aaed9d9970f6755c1cfc3",
+   "pages/doc_0000000/06_label.json": "d96e62f2aeae859ae4e8c9217ea74fb5",
+   "pages/doc_0000000/steps.json": "10417fae0504f662b2caf9d4b52ed1e5",
+   "pages/doc_0000001/01_entities.json": "39b46530e9f2a96328fdcf7d25e523b4",
+   "pages/doc_0000001/02_text.json": "767fa6d8a5bd3c76a4fddd4dbf713502",
+   "pages/doc_0000001/03_layout.json": "9407aec72bf7deae9eff0a3aa6f4426c",
+   "pages/doc_0000001/03_layout.png": "24921e1e237381a53560b513029f1f79",
+   "pages/doc_0000001/04_composed.json": "f7d291eeffb17cfde54ad736725f1e40",
+   "pages/doc_0000001/04_composed.png": "4fabe4b6bb86a9f967f3ab1e10e7963b",
+   "pages/doc_0000001/05_degraded.json": "8e4e72878bf417f615a9331570deb8e4",
+   "pages/doc_0000001/05_degraded.png": "57f91ff064ed83c166dae650d5c9cd5d",
+   "pages/doc_0000001/05_target.png": "5ff063d58ed669323112b1a9cd71826b",
+   "pages/doc_0000001/06_label.json": "3e621dd19e3b43a50b62456477711404",
+   "pages/doc_0000001/steps.json": "10417fae0504f662b2caf9d4b52ed1e5",
+   "pages/doc_0000002/01_entities.json": "ed0505a7bdee098fb3b2d867a7e51931",
+   "pages/doc_0000002/02_text.json": "7118879cde8507ef0cde7856cb470573",
+   "pages/doc_0000002/03_layout.json": "51d8b2c2436b3d3e9b3a66be8a41d146",
+   "pages/doc_0000002/03_layout.png": "78e728f7a584e27b2bba07a229b1f95e",
+   "pages/doc_0000002/04_composed.json": "64f8ab8aacd719c0767db674366750cd",
+   "pages/doc_0000002/04_composed.png": "bb3044f5d67a40f438c2d2d0d66698dd",
+   "pages/doc_0000002/05_degraded.json": "efb1ee9a2679e5702240148f66797968",
+   "pages/doc_0000002/05_degraded.png": "28406887db61c982794f37bf7b905c2a",
+   "pages/doc_0000002/05_target.png": "97e015189813ff4d2e5a4c53762e05f0",
+   "pages/doc_0000002/06_label.json": "6c77fc4ef5750899459a9c92c6f44968",
+   "pages/doc_0000002/steps.json": "10417fae0504f662b2caf9d4b52ed1e5",
+   "pages/doc_0000003/01_entities.json": "6c06f313e81b9c014de824a99052e3ab",
+   "pages/doc_0000003/02_text.json": "90ee6de6da454fb166c79a9067dae8c2",
+   "pages/doc_0000003/03_layout.json": "7935402cffa7c54fe37c3c48def49e51",
+   "pages/doc_0000003/03_layout.png": "ec0e0578a8759096ddeded2ce0d1bab6",
+   "pages/doc_0000003/04_composed.json": "4fb34fd7b78d84709bd23016204a83c9",
+   "pages/doc_0000003/04_composed.png": "9d0e5383608ac0f545f6ab600ef5bb8f",
+   "pages/doc_0000003/05_degraded.json": "9db68ca2be5799ddbf738cb86b1e31e9",
+   "pages/doc_0000003/05_degraded.png": "f59cf45a80c2eec73c268f8d4c3b3870",
+   "pages/doc_0000003/05_target.png": "13890604b44c3c018a7a8f64608804c6",
+   "pages/doc_0000003/06_label.json": "89033d2ca0efaff7d59364e4e3bb6022",
+   "pages/doc_0000003/steps.json": "10417fae0504f662b2caf9d4b52ed1e5",
+   "pages/doc_0000005/01_entities.json": "071f4e34ddc548fd2706df8d1c963008",
+   "pages/doc_0000005/02_text.json": "dac4e7f372e7d1471d63131756f65fe5",
+   "pages/doc_0000005/03_layout.json": "d44a9c452d4c0eaf83e0b4be51d2e543",
+   "pages/doc_0000005/03_layout.png": "b5e32782e1d26e7b186df61b2f3d063e",
+   "pages/doc_0000005/04_composed.json": "004d07559dae57326deecd55e0266d8f",
+   "pages/doc_0000005/04_composed.png": "053f17c4a26a3dd97c5ef2b1d03d11b7",
+   "pages/doc_0000005/05_degraded.json": "e0d80767b6ebb3eeb42dc670421b88a6",
+   "pages/doc_0000005/05_degraded.png": "4bd5709cdeded882fb15254292289855",
+   "pages/doc_0000005/05_target.png": "11138ea669606e72ad0babd4246bd516",
+   "pages/doc_0000005/06_label.json": "287a0661e22b01d33e2162f5616465f5",
+   "pages/doc_0000005/steps.json": "10417fae0504f662b2caf9d4b52ed1e5",
+   "pages/doc_0000007/01_entities.json": "bde9efcc187d40bbf609dee6a4f25127",
+   "pages/doc_0000007/02_text.json": "9344a5006faf6d055721e2af706b0ba1",
+   "pages/doc_0000007/03_layout.json": "9075371256ff2a4863f94deb084d1aa9",
+   "pages/doc_0000007/03_layout.png": "1a7164d4fbb25d8c091150471a8f8165",
+   "pages/doc_0000007/04_composed.json": "cbfe04916704410580ba6965d7051a19",
+   "pages/doc_0000007/04_composed.png": "8bc01da9e0ebb5279fcef3df5e417c29",
+   "pages/doc_0000007/05_degraded.json": "34e39453d4fcf04eccc9d8086e3752ae",
+   "pages/doc_0000007/05_degraded.png": "1c2e54548d0d9ac717653378fa9386f4",
+   "pages/doc_0000007/05_target.png": "c5bb47873844b81442f0c2f2e79a0f45",
+   "pages/doc_0000007/06_label.json": "2e0c54d7efd52f935f4b6576a711b76d",
+   "pages/doc_0000007/steps.json": "10417fae0504f662b2caf9d4b52ed1e5",
+   "pages/doc_0000008/01_entities.json": "a1676a2cf036ca26ba62855a3a71fc26",
+   "pages/doc_0000008/02_text.json": "7405c50644af7192f7800b0f28f78136",
+   "pages/doc_0000008/03_layout.json": "c327b5bfec66958a82ada55ad4ee3f14",
+   "pages/doc_0000008/03_layout.png": "3a0ec32f4e050bc658d62495b6fa7a0d",
+   "pages/doc_0000008/04_composed.json": "98bfcfbdf45bd29ea9d0ea79a854cfc5",
+   "pages/doc_0000008/04_composed.png": "d4665d0301c7ab819c9d7342bc36ebc6",
+   "pages/doc_0000008/05_degraded.json": "0e5a74537436595c942294892514e3e9",
+   "pages/doc_0000008/05_degraded.png": "d4f708ed8e2f71adc0c87523b8aebda5",
+   "pages/doc_0000008/05_target.png": "13a8ffc225bd6696b63a4783f2c163af",
+   "pages/doc_0000008/06_label.json": "6858fa24367d9bd3d1711e02dc247954",
+   "pages/doc_0000008/steps.json": "10417fae0504f662b2caf9d4b52ed1e5",
+   "pages/doc_0000009/01_entities.json": "62765a40a7248e61a6aa0fdb4ed5e284",
+   "pages/doc_0000009/02_text.json": "289134c1461b9f4b172bdcf61ab81775",
+   "pages/doc_0000009/03_layout.json": "8fefcfe711a5d6f86c921bbbd0ab15ed",
+   "pages/doc_0000009/03_layout.png": "4fd8e2d793c22d7372f4a108e7d79017",
+   "pages/doc_0000009/04_composed.json": "111c6e8e96cf582f6e9fc850d2a462aa",
+   "pages/doc_0000009/04_composed.png": "dc62a9363e8dac6cdc9e872c03c31b26",
+   "pages/doc_0000009/05_degraded.json": "49400270046aab48df4cce98915bd2af",
+   "pages/doc_0000009/05_degraded.png": "32cdab8b4a82ff7b0b992f4af4ded151",
+   "pages/doc_0000009/05_target.png": "ce1f11d86589e85e96296ddd980d627b",
+   "pages/doc_0000009/06_label.json": "976b2084ced614f97c6f668f88b0dd7c",
+   "pages/doc_0000009/steps.json": "10417fae0504f662b2caf9d4b52ed1e5",
+   "pages/doc_0000010/01_entities.json": "9787076a2c569e21657051147812224f",
+   "pages/doc_0000010/02_text.json": "bbf29bf4e9079a5330f24fdd846fe7cf",
+   "pages/doc_0000010/03_layout.json": "2764a19e47476b9339171f7c50d774e2",
+   "pages/doc_0000010/03_layout.png": "0e66d93a3f9413ae80420f9e070ee9d7",
+   "pages/doc_0000010/04_composed.json": "272726eb70b77c0dffb12f5c3ae26d07",
+   "pages/doc_0000010/04_composed.png": "b2c2f4d7e1080a1474467b4490a53971",
+   "pages/doc_0000010/05_degraded.json": "9239bafb3682125b9e6f2d6066b5e482",
+   "pages/doc_0000010/05_degraded.png": "d18708cb5152cf48e5500144a5f5d617",
+   "pages/doc_0000010/05_target.png": "df057d668bb36e174eb2fabb383a5e2f",
+   "pages/doc_0000010/06_label.json": "cbbdfed9bf717761005eb2bb51b0143e",
+   "pages/doc_0000010/steps.json": "10417fae0504f662b2caf9d4b52ed1e5",
+   "pages/doc_0000020/01_entities.json": "a7e708a514bac0b1f443e45da21fff82",
+   "pages/doc_0000020/02_text.json": "6bcbe85a2510643b8545bb77298138f2",
+   "pages/doc_0000020/03_layout.json": "07ba754b2cc415ac3818b06088fe4e9a",
+   "pages/doc_0000020/03_layout.png": "b8e65ee7937ad2ae37d00c4a4631618a",
+   "pages/doc_0000020/04_composed.json": "144e882ef367b06fd75bde4161fcee0c",
+   "pages/doc_0000020/04_composed.png": "e81641bd746ec84636c5e2c520c143ee",
+   "pages/doc_0000020/05_degraded.json": "1f8774b432447e64386c7c940b95ac4e",
+   "pages/doc_0000020/05_degraded.png": [
+    1274,
+    1675
+   ],
+   "pages/doc_0000020/05_target.png": "378231cbecdecba9ea4e573a5c8a080a",
+   "pages/doc_0000020/06_label.json": "41fe16a61176c698cffbb43f51bbc13e",
+   "pages/doc_0000020/steps.json": "10417fae0504f662b2caf9d4b52ed1e5",
+   "pages/doc_0000024/01_entities.json": "5fd9fbea50038faf2b0ab045c5ff26fc",
+   "pages/doc_0000024/02_text.json": "59c1a2acbc03881d8bd7122306dd09b1",
+   "pages/doc_0000024/03_layout.json": "ad39b87aa472280a2c78fbb25839323d",
+   "pages/doc_0000024/03_layout.png": "2fa2b9b149a0eaa57b41a914783cfb8f",
+   "pages/doc_0000024/04_composed.json": "9b481f2f6902ad46a0ff6b2aa296942c",
+   "pages/doc_0000024/04_composed.png": "62fe627c9be0f86ee89aec6b6a7bb79b",
+   "pages/doc_0000024/05_degraded.json": "3a53ac576f6a7bf2b24568b2f8cc887c",
+   "pages/doc_0000024/05_degraded.png": "aa646517b243021e6d39b7a52d350080",
+   "pages/doc_0000024/05_target.png": "ae3ce7a7ca743aa4842c5560e8d6c63b",
+   "pages/doc_0000024/06_label.json": "e7c5b7af0cd1e829cb5a2b7f0e65068b",
+   "pages/doc_0000024/steps.json": "10417fae0504f662b2caf9d4b52ed1e5"
+  },
+  "config/hindi_sale_deed_v1_reference.yaml": {
+   "dataset/train/doc_0000000.json": "b5f0b49245e75c48c630ce6d650d6941",
+   "dataset/train/doc_0000000.png": "a93bf074294caf427f07c700277cfd4d",
+   "dataset/train/doc_0000000_target.png": "36a15542166c82bd55300bf215748041",
+   "dataset/train/doc_0000001.json": "6cdfa5b65f104f9cdb1b7b6896be53fd",
+   "dataset/train/doc_0000001.png": "57f91ff064ed83c166dae650d5c9cd5d",
+   "dataset/train/doc_0000001_target.png": "5ff063d58ed669323112b1a9cd71826b",
+   "dataset/train/doc_0000003.json": "ca3071692b9e778ef60ad88d0117d664",
+   "dataset/train/doc_0000003.png": "b76d513a3479f071e82c6ea36ce898de",
+   "dataset/train/doc_0000003_target.png": "d9a4c0b1e205920dcf73e425dc7757c7",
+   "dataset/train/doc_0000008.json": "a03b17f480952062544a6005640b0628",
+   "dataset/train/doc_0000008.png": "6efdf90641c16033ffea5d3b3ff3eb9b",
+   "dataset/train/doc_0000008_target.png": "e86224e670a2980684fa8dd2ec2456b2",
+   "dataset/train/doc_0000010.json": "347ff6592f1c90fe907393956b8a76b4",
+   "dataset/train/doc_0000010.png": "d7549d9aef9614c639ed7e18f5f7214c",
+   "dataset/train/doc_0000010_target.png": "f01610c800a87d10fdcb7ad7c0f12a38",
+   "dataset/val/doc_0000005.json": "ab199451dfefd1eae482adf412f36b47",
+   "dataset/val/doc_0000005.png": "a0136d9358498b405cd6dfd3390c1c5b",
+   "dataset/val/doc_0000005_target.png": "6b77d5b0b2ec809c2c8e7d4334f3a331",
+   "pages/doc_0000000/01_entities.json": "c2bce2cde8ccfe6463e199c02aff7fda",
+   "pages/doc_0000000/02_text.json": "2559cd04c808696447dfce48989d7494",
+   "pages/doc_0000000/03_layout.json": "3c143e49cb68225731c697ca1d69fb5f",
+   "pages/doc_0000000/03_layout.png": "fb720bbfec482086e83b8824abc54bd3",
+   "pages/doc_0000000/04_composed.json": "a7e1bcc0ffa96faa2d5370e0dd515530",
+   "pages/doc_0000000/04_composed.png": "13a80f94fd5121a815bf11c5a27a19ba",
+   "pages/doc_0000000/05_degraded.json": "1ba48cd7b0a52221a80576e58dd516d2",
+   "pages/doc_0000000/05_degraded.png": "a93bf074294caf427f07c700277cfd4d",
+   "pages/doc_0000000/05_target.png": "36a15542166c82bd55300bf215748041",
+   "pages/doc_0000000/06_label.json": "740f1c33a5b09fb2495d7a52d7790ced",
+   "pages/doc_0000000/steps.json": "10417fae0504f662b2caf9d4b52ed1e5",
+   "pages/doc_0000001/01_entities.json": "39b46530e9f2a96328fdcf7d25e523b4",
+   "pages/doc_0000001/02_text.json": "767fa6d8a5bd3c76a4fddd4dbf713502",
+   "pages/doc_0000001/03_layout.json": "9407aec72bf7deae9eff0a3aa6f4426c",
+   "pages/doc_0000001/03_layout.png": "24921e1e237381a53560b513029f1f79",
+   "pages/doc_0000001/04_composed.json": "f7d291eeffb17cfde54ad736725f1e40",
+   "pages/doc_0000001/04_composed.png": "4fabe4b6bb86a9f967f3ab1e10e7963b",
+   "pages/doc_0000001/05_degraded.json": "8e4e72878bf417f615a9331570deb8e4",
+   "pages/doc_0000001/05_degraded.png": "57f91ff064ed83c166dae650d5c9cd5d",
+   "pages/doc_0000001/05_target.png": "5ff063d58ed669323112b1a9cd71826b",
+   "pages/doc_0000001/06_label.json": "3e621dd19e3b43a50b62456477711404",
+   "pages/doc_0000001/steps.json": "10417fae0504f662b2caf9d4b52ed1e5",
+   "pages/doc_0000003/01_entities.json": "9bbe28b798f1ffd04d4928866b38f4f9",
+   "pages/doc_0000003/02_text.json": "90ee6de6da454fb166c79a9067dae8c2",
+   "pages/doc_0000003/03_layout.json": "d5c37969085f6e118137fde4732e5b11",
+   "pages/doc_0000003/03_layout.png": "15ebfa335d2e6f3220965a4a0583bfbe",
+   "pages/doc_0000003/04_composed.json": "ad3d5eef65965dec1fd586c5f470fcc3",
+   "pages/doc_0000003/04_composed.png": "be423bb9d67fb43641aa7e7a03182c0b",
+   "pages/doc_0000003/05_degraded.json": "5bb6652fda41a6b6082322283761144f",
+   "pages/doc_0000003/05_degraded.png": "b76d513a3479f071e82c6ea36ce898de",
+   "pages/doc_0000003/05_target.png": "d9a4c0b1e205920dcf73e425dc7757c7",
+   "pages/doc_0000003/06_label.json": "6d8f7a58c5ec7a0a5ef964f1f857a862",
+   "pages/doc_0000003/steps.json": "10417fae0504f662b2caf9d4b52ed1e5",
+   "pages/doc_0000005/01_entities.json": "c9e9e1dd44b572dede7f566c7f92d93a",
+   "pages/doc_0000005/02_text.json": "dac4e7f372e7d1471d63131756f65fe5",
+   "pages/doc_0000005/03_layout.json": "a5d190343fc6cec3b862272f21b2b204",
+   "pages/doc_0000005/03_layout.png": "73ad40b4406b8cb8672a7d9b59f3e2a6",
+   "pages/doc_0000005/04_composed.json": "8ac8b76ee7b0699a9f4b4f397751d86f",
+   "pages/doc_0000005/04_composed.png": "95a7f5018899703f341954ba6a729f72",
+   "pages/doc_0000005/05_degraded.json": "3590d02960a208690cb42ed2320c20bb",
+   "pages/doc_0000005/05_degraded.png": "a0136d9358498b405cd6dfd3390c1c5b",
+   "pages/doc_0000005/05_target.png": "6b77d5b0b2ec809c2c8e7d4334f3a331",
+   "pages/doc_0000005/06_label.json": "c070ca051d3722984e39b47824662cc0",
+   "pages/doc_0000005/steps.json": "10417fae0504f662b2caf9d4b52ed1e5",
+   "pages/doc_0000008/01_entities.json": "e86735c321992e469a50ccd2264ffad5",
+   "pages/doc_0000008/02_text.json": "7405c50644af7192f7800b0f28f78136",
+   "pages/doc_0000008/03_layout.json": "5ce51c547dbe7576456a9dbf6f5915b9",
+   "pages/doc_0000008/03_layout.png": "cc38c1c9b21b66b409ac3ee7772ef08c",
+   "pages/doc_0000008/04_composed.json": "820beb0315834ded37236596ecee59a5",
+   "pages/doc_0000008/04_composed.png": "51cfdf8f940c33eb2bb85aacc348c6f6",
+   "pages/doc_0000008/05_degraded.json": "1bdedaf6b1c2bcf2c3e0b8ff76da4786",
+   "pages/doc_0000008/05_degraded.png": "6efdf90641c16033ffea5d3b3ff3eb9b",
+   "pages/doc_0000008/05_target.png": "e86224e670a2980684fa8dd2ec2456b2",
+   "pages/doc_0000008/06_label.json": "a38d0bde7ba9a67240247136e7df0fa5",
+   "pages/doc_0000008/steps.json": "10417fae0504f662b2caf9d4b52ed1e5",
+   "pages/doc_0000010/01_entities.json": "c4ee56ca223c2fe484e4ad26a22813a7",
+   "pages/doc_0000010/02_text.json": "bbf29bf4e9079a5330f24fdd846fe7cf",
+   "pages/doc_0000010/03_layout.json": "1899826199a30003cdd2f992182c0ec4",
+   "pages/doc_0000010/03_layout.png": "38bce676f023b6332dcf64b0e498b42f",
+   "pages/doc_0000010/04_composed.json": "9dc6ada6dac42d912d3a546676f109f6",
+   "pages/doc_0000010/04_composed.png": "f08ea19adc9f839d8575e31d4f7284b2",
+   "pages/doc_0000010/05_degraded.json": "2d305fd4072b5f9975bb5ca75eb64323",
+   "pages/doc_0000010/05_degraded.png": "d7549d9aef9614c639ed7e18f5f7214c",
+   "pages/doc_0000010/05_target.png": "f01610c800a87d10fdcb7ad7c0f12a38",
+   "pages/doc_0000010/06_label.json": "0763cd942d6df52a17197992823a321b",
+   "pages/doc_0000010/steps.json": "10417fae0504f662b2caf9d4b52ed1e5"
+  }
+ },
+ "files_B": {
+  "config/hindi_sale_deed.yaml": {
+   "dataset/test/doc_0000020.json": "fd04aba20e8ea845730771048bd9e33c",
+   "dataset/test/doc_0000020.png": [
+    1274,
+    1675
+   ],
+   "dataset/test/doc_0000020_target.png": [
+    1274,
+    1675
+   ],
+   "dataset/train/doc_0000000.json": "60db0c3e748c84e477986b4bc68e84a2",
+   "dataset/train/doc_0000000.png": [
+    1313,
+    1710
+   ],
+   "dataset/train/doc_0000000_target.png": [
+    1313,
+    1710
+   ],
+   "dataset/train/doc_0000001.json": "6cdfa5b65f104f9cdb1b7b6896be53fd",
+   "dataset/train/doc_0000001.png": [
+    1264,
+    1771
+   ],
+   "dataset/train/doc_0000001_target.png": [
+    1264,
+    1771
+   ],
+   "dataset/train/doc_0000002.json": "455410a76222c49af071cff75847b87f",
+   "dataset/train/doc_0000002.png": [
+    1277,
+    1780
+   ],
+   "dataset/train/doc_0000002_target.png": [
+    1277,
+    1780
+   ],
+   "dataset/train/doc_0000003.json": "8c01ed389201de53e0dbbe22e764f74a",
+   "dataset/train/doc_0000003.png": [
+    1228,
+    1818
+   ],
+   "dataset/train/doc_0000003_target.png": [
+    1228,
+    1818
+   ],
+   "dataset/train/doc_0000007.json": "b998eff4dbcd82e04d28c0d8f4ef0ba9",
+   "dataset/train/doc_0000007.png": [
+    1361,
+    1760
+   ],
+   "dataset/train/doc_0000007_target.png": [
+    1361,
+    1760
+   ],
+   "dataset/train/doc_0000008.json": "5ec940fa9a1d1cf66ebf2f48d41d6f4b",
+   "dataset/train/doc_0000008.png": [
+    1267,
+    1670
+   ],
+   "dataset/train/doc_0000008_target.png": [
+    1267,
+    1670
+   ],
+   "dataset/train/doc_0000009.json": "704874536ef4da697adedc794a3d6732",
+   "dataset/train/doc_0000009.png": [
+    1352,
+    1732
+   ],
+   "dataset/train/doc_0000009_target.png": [
+    1352,
+    1732
+   ],
+   "dataset/train/doc_0000010.json": "a630b8afc68576ab40f0f8a312c0605e",
+   "dataset/train/doc_0000010.png": [
+    1113,
+    1569
+   ],
+   "dataset/train/doc_0000010_target.png": [
+    1113,
+    1569
+   ],
+   "dataset/train/doc_0000024.json": "cbf4367b017d4935f705792d0d9b850a",
+   "dataset/train/doc_0000024.png": [
+    1240,
+    1650
+   ],
+   "dataset/train/doc_0000024_target.png": [
+    1240,
+    1650
+   ],
+   "dataset/val/doc_0000005.json": "868627903d95a734434ee4d75c0e01c4",
+   "dataset/val/doc_0000005.png": [
+    1368,
+    1766
+   ],
+   "dataset/val/doc_0000005_target.png": [
+    1368,
+    1766
+   ],
+   "pages/doc_0000000/01_entities.json": "8c62364fe0f95987297baa73dd3ee085",
+   "pages/doc_0000000/02_text.json": "2559cd04c808696447dfce48989d7494",
+   "pages/doc_0000000/03_layout.json": "4d4d92046b33b46985fafce2aa399ac1",
+   "pages/doc_0000000/03_layout.png": [
+    1300,
+    1700
+   ],
+   "pages/doc_0000000/04_composed.json": "a215d0d57426973d88bab801beb61b13",
+   "pages/doc_0000000/04_composed.png": [
+    1300,
+    1700
+   ],
+   "pages/doc_0000000/05_degraded.json": "360b8eeaeccd2d24aa42b37992ab7bdb",
+   "pages/doc_0000000/05_degraded.png": [
+    1313,
+    1710
+   ],
+   "pages/doc_0000000/05_target.png": [
+    1313,
+    1710
+   ],
+   "pages/doc_0000000/06_label.json": "1ca680fb0d0e5e135a1056469feebb41",
+   "pages/doc_0000000/steps.json": "10417fae0504f662b2caf9d4b52ed1e5",
+   "pages/doc_0000001/01_entities.json": "39b46530e9f2a96328fdcf7d25e523b4",
+   "pages/doc_0000001/02_text.json": "767fa6d8a5bd3c76a4fddd4dbf713502",
+   "pages/doc_0000001/03_layout.json": "9407aec72bf7deae9eff0a3aa6f4426c",
+   "pages/doc_0000001/03_layout.png": [
+    1240,
+    1754
+   ],
+   "pages/doc_0000001/04_composed.json": "d5d8fe657ed973f6248781a1ab4a1751",
+   "pages/doc_0000001/04_composed.png": [
+    1240,
+    1754
+   ],
+   "pages/doc_0000001/05_degraded.json": "f055a8cb58606c99ec7792b95c7ede02",
+   "pages/doc_0000001/05_degraded.png": [
+    1264,
+    1771
+   ],
+   "pages/doc_0000001/05_target.png": [
+    1264,
+    1771
+   ],
+   "pages/doc_0000001/06_label.json": "3e621dd19e3b43a50b62456477711404",
+   "pages/doc_0000001/steps.json": "10417fae0504f662b2caf9d4b52ed1e5",
+   "pages/doc_0000002/01_entities.json": "ed0505a7bdee098fb3b2d867a7e51931",
+   "pages/doc_0000002/02_text.json": "7118879cde8507ef0cde7856cb470573",
+   "pages/doc_0000002/03_layout.json": "7e9ee2e899f62141d6cce0094a377d77",
+   "pages/doc_0000002/03_layout.png": [
+    1240,
+    1754
+   ],
+   "pages/doc_0000002/04_composed.json": "75a176f32236217b7a04e3f02c93a7c1",
+   "pages/doc_0000002/04_composed.png": [
+    1240,
+    1754
+   ],
+   "pages/doc_0000002/05_degraded.json": "6dad568b9fc18b7163f4217243bce79c",
+   "pages/doc_0000002/05_degraded.png": [
+    1277,
+    1780
+   ],
+   "pages/doc_0000002/05_target.png": [
+    1277,
+    1780
+   ],
+   "pages/doc_0000002/06_label.json": "23ec0dbfe3edfa9291f87c5934280d9e",
+   "pages/doc_0000002/steps.json": "10417fae0504f662b2caf9d4b52ed1e5",
+   "pages/doc_0000003/01_entities.json": "6c06f313e81b9c014de824a99052e3ab",
+   "pages/doc_0000003/02_text.json": "90ee6de6da454fb166c79a9067dae8c2",
+   "pages/doc_0000003/03_layout.json": "f395f85501a8546ce88247774c5bf3dc",
+   "pages/doc_0000003/03_layout.png": [
+    1200,
+    1800
+   ],
+   "pages/doc_0000003/04_composed.json": "6d2dfa1d16815bdc2f5385d7736e74cc",
+   "pages/doc_0000003/04_composed.png": [
+    1200,
+    1800
+   ],
+   "pages/doc_0000003/05_degraded.json": "f92c0cda42dcaa00f50499e49f0a0148",
+   "pages/doc_0000003/05_degraded.png": [
+    1228,
+    1818
+   ],
+   "pages/doc_0000003/05_target.png": [
+    1228,
+    1818
+   ],
+   "pages/doc_0000003/06_label.json": "8b1efb238f9413bc9f70e8136ca78741",
+   "pages/doc_0000003/steps.json": "10417fae0504f662b2caf9d4b52ed1e5",
+   "pages/doc_0000005/01_entities.json": "071f4e34ddc548fd2706df8d1c963008",
+   "pages/doc_0000005/02_text.json": "dac4e7f372e7d1471d63131756f65fe5",
+   "pages/doc_0000005/03_layout.json": "b7f37ae28edc848824ee82f0fe58d639",
+   "pages/doc_0000005/03_layout.png": [
+    1360,
+    1760
+   ],
+   "pages/doc_0000005/04_composed.json": "966d712f16277476cecc4c9f6674b175",
+   "pages/doc_0000005/04_composed.png": [
+    1360,
+    1760
+   ],
+   "pages/doc_0000005/05_degraded.json": "4160b8c88220cdc704a50dbee864e213",
+   "pages/doc_0000005/05_degraded.png": [
+    1368,
+    1766
+   ],
+   "pages/doc_0000005/05_target.png": [
+    1368,
+    1766
+   ],
+   "pages/doc_0000005/06_label.json": "15739acf4c6570560e4a8baf41cef178",
+   "pages/doc_0000005/steps.json": "10417fae0504f662b2caf9d4b52ed1e5",
+   "pages/doc_0000007/01_entities.json": "bde9efcc187d40bbf609dee6a4f25127",
+   "pages/doc_0000007/02_text.json": "9344a5006faf6d055721e2af706b0ba1",
+   "pages/doc_0000007/03_layout.json": "9b3a85210c1e9c6c41a204dc404dd2c1",
+   "pages/doc_0000007/03_layout.png": [
+    1360,
+    1760
+   ],
+   "pages/doc_0000007/04_composed.json": "0ae3d6ceb90a59185aee6be66a8d25fb",
+   "pages/doc_0000007/04_composed.png": [
+    1360,
+    1760
+   ],
+   "pages/doc_0000007/05_degraded.json": "bb4c445be9e9261da130683074fdccce",
+   "pages/doc_0000007/05_degraded.png": [
+    1361,
+    1760
+   ],
+   "pages/doc_0000007/05_target.png": [
+    1361,
+    1760
+   ],
+   "pages/doc_0000007/06_label.json": "713fcc738f5c6b15f922542052d0557d",
+   "pages/doc_0000007/steps.json": "10417fae0504f662b2caf9d4b52ed1e5",
+   "pages/doc_0000008/01_entities.json": "a1676a2cf036ca26ba62855a3a71fc26",
+   "pages/doc_0000008/02_text.json": "7405c50644af7192f7800b0f28f78136",
+   "pages/doc_0000008/03_layout.json": "c327b5bfec66958a82ada55ad4ee3f14",
+   "pages/doc_0000008/03_layout.png": [
+    1240,
+    1650
+   ],
+   "pages/doc_0000008/04_composed.json": "a96fc3bff7ca88bd7b8bc59720bfd348",
+   "pages/doc_0000008/04_composed.png": [
+    1240,
+    1650
+   ],
+   "pages/doc_0000008/05_degraded.json": "59d099e3e2b763420c24383bf9ba7f29",
+   "pages/doc_0000008/05_degraded.png": [
+    1267,
+    1670
+   ],
+   "pages/doc_0000008/05_target.png": [
+    1267,
+    1670
+   ],
+   "pages/doc_0000008/06_label.json": "6858fa24367d9bd3d1711e02dc247954",
+   "pages/doc_0000008/steps.json": "10417fae0504f662b2caf9d4b52ed1e5",
+   "pages/doc_0000009/01_entities.json": "62765a40a7248e61a6aa0fdb4ed5e284",
+   "pages/doc_0000009/02_text.json": "289134c1461b9f4b172bdcf61ab81775",
+   "pages/doc_0000009/03_layout.json": "7cf1310e0ed8286df6b56a1454daab0f",
+   "pages/doc_0000009/03_layout.png": [
+    1240,
+    1650
+   ],
+   "pages/doc_0000009/04_composed.json": "e3c6544ce4878bcdd2f209f43f64c2f1",
+   "pages/doc_0000009/04_composed.png": [
+    1240,
+    1650
+   ],
+   "pages/doc_0000009/05_degraded.json": "3d75598923f78ea577537658f38f1164",
+   "pages/doc_0000009/05_degraded.png": [
+    1352,
+    1732
+   ],
+   "pages/doc_0000009/05_target.png": [
+    1352,
+    1732
+   ],
+   "pages/doc_0000009/06_label.json": "cfa6887b918009eace384fba8295e0e0",
+   "pages/doc_0000009/steps.json": "10417fae0504f662b2caf9d4b52ed1e5",
+   "pages/doc_0000010/01_entities.json": "9787076a2c569e21657051147812224f",
+   "pages/doc_0000010/02_text.json": "bbf29bf4e9079a5330f24fdd846fe7cf",
+   "pages/doc_0000010/03_layout.json": "bcc69c47719a357822d93d0be6dc6c5e",
+   "pages/doc_0000010/03_layout.png": [
+    1100,
+    1560
+   ],
+   "pages/doc_0000010/04_composed.json": "b39b80eb4b15b63efc30106a30b34329",
+   "pages/doc_0000010/04_composed.png": [
+    1100,
+    1560
+   ],
+   "pages/doc_0000010/05_degraded.json": "1bb7305ea62ced603dec988ff61d619b",
+   "pages/doc_0000010/05_degraded.png": [
+    1113,
+    1569
+   ],
+   "pages/doc_0000010/05_target.png": [
+    1113,
+    1569
+   ],
+   "pages/doc_0000010/06_label.json": "99165ee6b5474b447dd7867d1e764cdd",
+   "pages/doc_0000010/steps.json": "10417fae0504f662b2caf9d4b52ed1e5",
+   "pages/doc_0000020/01_entities.json": "a7e708a514bac0b1f443e45da21fff82",
+   "pages/doc_0000020/02_text.json": "6bcbe85a2510643b8545bb77298138f2",
+   "pages/doc_0000020/03_layout.json": "07ba754b2cc415ac3818b06088fe4e9a",
+   "pages/doc_0000020/03_layout.png": [
+    1240,
+    1650
+   ],
+   "pages/doc_0000020/04_composed.json": "1c7c90afdbd3a1da387aeb605472696d",
+   "pages/doc_0000020/04_composed.png": [
+    1240,
+    1650
+   ],
+   "pages/doc_0000020/05_degraded.json": "94c83502cf6b14d81c1ba4b2d3b7a0ea",
+   "pages/doc_0000020/05_degraded.png": [
+    1274,
+    1675
+   ],
+   "pages/doc_0000020/05_target.png": [
+    1274,
+    1675
+   ],
+   "pages/doc_0000020/06_label.json": "d9afcc83671f0d4d5aed2be34bedc38c",
+   "pages/doc_0000020/steps.json": "10417fae0504f662b2caf9d4b52ed1e5",
+   "pages/doc_0000024/01_entities.json": "5fd9fbea50038faf2b0ab045c5ff26fc",
+   "pages/doc_0000024/02_text.json": "59c1a2acbc03881d8bd7122306dd09b1",
+   "pages/doc_0000024/03_layout.json": "8792389fcb4a015e9f2cff41b5892965",
+   "pages/doc_0000024/03_layout.png": [
+    1240,
+    1650
+   ],
+   "pages/doc_0000024/04_composed.json": "f0fbb999d8d32ef6eb34557c3a2536bd",
+   "pages/doc_0000024/04_composed.png": [
+    1240,
+    1650
+   ],
+   "pages/doc_0000024/05_degraded.json": "7c242c6076559462d51bfa3774862e48",
+   "pages/doc_0000024/05_degraded.png": [
+    1240,
+    1650
+   ],
+   "pages/doc_0000024/05_target.png": [
+    1240,
+    1650
+   ],
+   "pages/doc_0000024/06_label.json": "936e94b587dbc0e1c2096b655ea9ae4f",
+   "pages/doc_0000024/steps.json": "10417fae0504f662b2caf9d4b52ed1e5"
+  },
+  "config/hindi_sale_deed_v1_reference.yaml": {
+   "dataset/train/doc_0000000.json": "27869ba220acec8c1d76ba0392a19959",
+   "dataset/train/doc_0000000.png": [
+    1313,
+    1710
+   ],
+   "dataset/train/doc_0000000_target.png": [
+    1313,
+    1710
+   ],
+   "dataset/train/doc_0000001.json": "6cdfa5b65f104f9cdb1b7b6896be53fd",
+   "dataset/train/doc_0000001.png": [
+    1264,
+    1771
+   ],
+   "dataset/train/doc_0000001_target.png": [
+    1264,
+    1771
+   ],
+   "dataset/train/doc_0000003.json": "c1f4f405548400da0122d03e336ec777",
+   "dataset/train/doc_0000003.png": [
+    1228,
+    1818
+   ],
+   "dataset/train/doc_0000003_target.png": [
+    1228,
+    1818
+   ],
+   "dataset/train/doc_0000008.json": "a03b17f480952062544a6005640b0628",
+   "dataset/train/doc_0000008.png": [
+    1267,
+    1670
+   ],
+   "dataset/train/doc_0000008_target.png": [
+    1267,
+    1670
+   ],
+   "dataset/train/doc_0000010.json": "1072a90dbe5c74a6caa1feef0108b26c",
+   "dataset/train/doc_0000010.png": [
+    1113,
+    1569
+   ],
+   "dataset/train/doc_0000010_target.png": [
+    1113,
+    1569
+   ],
+   "dataset/val/doc_0000005.json": "9655b1cc3410ae04b6afeb850d37f265",
+   "dataset/val/doc_0000005.png": [
+    1368,
+    1766
+   ],
+   "dataset/val/doc_0000005_target.png": [
+    1368,
+    1766
+   ],
+   "pages/doc_0000000/01_entities.json": "c2bce2cde8ccfe6463e199c02aff7fda",
+   "pages/doc_0000000/02_text.json": "2559cd04c808696447dfce48989d7494",
+   "pages/doc_0000000/03_layout.json": "fb9ee13e6d446b14331b8f93fcf6fa59",
+   "pages/doc_0000000/03_layout.png": [
+    1300,
+    1700
+   ],
+   "pages/doc_0000000/04_composed.json": "672f962967624cab87c14f51d93687b1",
+   "pages/doc_0000000/04_composed.png": [
+    1300,
+    1700
+   ],
+   "pages/doc_0000000/05_degraded.json": "0e19eecbaf1c9407e85bddb839022dff",
+   "pages/doc_0000000/05_degraded.png": [
+    1313,
+    1710
+   ],
+   "pages/doc_0000000/05_target.png": [
+    1313,
+    1710
+   ],
+   "pages/doc_0000000/06_label.json": "171f462f347097b21496a7eeedd998bc",
+   "pages/doc_0000000/steps.json": "10417fae0504f662b2caf9d4b52ed1e5",
+   "pages/doc_0000001/01_entities.json": "39b46530e9f2a96328fdcf7d25e523b4",
+   "pages/doc_0000001/02_text.json": "767fa6d8a5bd3c76a4fddd4dbf713502",
+   "pages/doc_0000001/03_layout.json": "9407aec72bf7deae9eff0a3aa6f4426c",
+   "pages/doc_0000001/03_layout.png": [
+    1240,
+    1754
+   ],
+   "pages/doc_0000001/04_composed.json": "d5d8fe657ed973f6248781a1ab4a1751",
+   "pages/doc_0000001/04_composed.png": [
+    1240,
+    1754
+   ],
+   "pages/doc_0000001/05_degraded.json": "f055a8cb58606c99ec7792b95c7ede02",
+   "pages/doc_0000001/05_degraded.png": [
+    1264,
+    1771
+   ],
+   "pages/doc_0000001/05_target.png": [
+    1264,
+    1771
+   ],
+   "pages/doc_0000001/06_label.json": "3e621dd19e3b43a50b62456477711404",
+   "pages/doc_0000001/steps.json": "10417fae0504f662b2caf9d4b52ed1e5",
+   "pages/doc_0000003/01_entities.json": "9bbe28b798f1ffd04d4928866b38f4f9",
+   "pages/doc_0000003/02_text.json": "90ee6de6da454fb166c79a9067dae8c2",
+   "pages/doc_0000003/03_layout.json": "7473612505c7d01b69c654aee1aa2e7d",
+   "pages/doc_0000003/03_layout.png": [
+    1200,
+    1800
+   ],
+   "pages/doc_0000003/04_composed.json": "e1be07b3ec04b8227f6c317d0fec27d3",
+   "pages/doc_0000003/04_composed.png": [
+    1200,
+    1800
+   ],
+   "pages/doc_0000003/05_degraded.json": "7ff1c987d5fef101a0a1ee75f4dcd476",
+   "pages/doc_0000003/05_degraded.png": [
+    1228,
+    1818
+   ],
+   "pages/doc_0000003/05_target.png": [
+    1228,
+    1818
+   ],
+   "pages/doc_0000003/06_label.json": "e88c2666ce6ebfbac2b2954103030f3e",
+   "pages/doc_0000003/steps.json": "10417fae0504f662b2caf9d4b52ed1e5",
+   "pages/doc_0000005/01_entities.json": "c9e9e1dd44b572dede7f566c7f92d93a",
+   "pages/doc_0000005/02_text.json": "dac4e7f372e7d1471d63131756f65fe5",
+   "pages/doc_0000005/03_layout.json": "780bb9eb6d6de78cf7726a1a3e5aaa49",
+   "pages/doc_0000005/03_layout.png": [
+    1360,
+    1760
+   ],
+   "pages/doc_0000005/04_composed.json": "cb841d831ded45251c0c560e045f0853",
+   "pages/doc_0000005/04_composed.png": [
+    1360,
+    1760
+   ],
+   "pages/doc_0000005/05_degraded.json": "c3b1dd6e90a93f6c0b7cf043c4dac662",
+   "pages/doc_0000005/05_degraded.png": [
+    1368,
+    1766
+   ],
+   "pages/doc_0000005/05_target.png": [
+    1368,
+    1766
+   ],
+   "pages/doc_0000005/06_label.json": "d32421ea6453cfa821d53cf3a4ca16cc",
+   "pages/doc_0000005/steps.json": "10417fae0504f662b2caf9d4b52ed1e5",
+   "pages/doc_0000008/01_entities.json": "e86735c321992e469a50ccd2264ffad5",
+   "pages/doc_0000008/02_text.json": "7405c50644af7192f7800b0f28f78136",
+   "pages/doc_0000008/03_layout.json": "5ce51c547dbe7576456a9dbf6f5915b9",
+   "pages/doc_0000008/03_layout.png": [
+    1240,
+    1650
+   ],
+   "pages/doc_0000008/04_composed.json": "ac8cede1df6fb46d2a0e63ad001f64b3",
+   "pages/doc_0000008/04_composed.png": [
+    1240,
+    1650
+   ],
+   "pages/doc_0000008/05_degraded.json": "405b3f967d5e0df649d61c95d1fda961",
+   "pages/doc_0000008/05_degraded.png": [
+    1267,
+    1670
+   ],
+   "pages/doc_0000008/05_target.png": [
+    1267,
+    1670
+   ],
+   "pages/doc_0000008/06_label.json": "a38d0bde7ba9a67240247136e7df0fa5",
+   "pages/doc_0000008/steps.json": "10417fae0504f662b2caf9d4b52ed1e5",
+   "pages/doc_0000010/01_entities.json": "c4ee56ca223c2fe484e4ad26a22813a7",
+   "pages/doc_0000010/02_text.json": "bbf29bf4e9079a5330f24fdd846fe7cf",
+   "pages/doc_0000010/03_layout.json": "4fdda89952db1703367e52cb19e9240b",
+   "pages/doc_0000010/03_layout.png": [
+    1100,
+    1560
+   ],
+   "pages/doc_0000010/04_composed.json": "78866dbcec863aa8a429368a16e88cf2",
+   "pages/doc_0000010/04_composed.png": [
+    1100,
+    1560
+   ],
+   "pages/doc_0000010/05_degraded.json": "8004f3449019ee0f804797c86125acd8",
+   "pages/doc_0000010/05_degraded.png": [
+    1113,
+    1569
+   ],
+   "pages/doc_0000010/05_target.png": [
+    1113,
+    1569
+   ],
+   "pages/doc_0000010/06_label.json": "c16110e1dd43587e4678b74bab5002ab",
+   "pages/doc_0000010/steps.json": "10417fae0504f662b2caf9d4b52ed1e5"
+  }
+ }
+}

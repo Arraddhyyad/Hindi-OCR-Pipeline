@@ -1,0 +1,56 @@
+# One config per run. Language and document type are config; code is generic.
+language: hi
+doc_type: sale_deed
+numerals: [latin, devanagari]
+seed_base: 0
+page:
+  sizes: [[1240, 1754], [1240, 1650], [1200, 1800], [1300, 1700], [1100, 1560], [1360, 1760]]   # px, varied per page
+  margin_l: [90, 130]
+  margin_r: [90, 130]
+  margin_t: [40, 80]
+  margin_b: [40, 80]
+  header_h: [150, 260]     # reserved for header artwork in stage 2
+  footer_h: [150, 240]
+  sig_h: 130
+fonts:                       # system family names (apt: fonts-noto-core fonts-deva-extra fonts-gargi fonts-sarai fonts-nakula fonts-lohit-deva)
+  - {family: "Noto Serif Devanagari", weight: 400, p: 0.22}
+  - {family: "Noto Serif Devanagari", weight: 500, p: 0.10}
+  - {family: "Noto Sans Devanagari", weight: 400, p: 0.12}
+  - {family: "Lohit Devanagari", weight: 400, p: 0.12}
+  - {family: "Gargi", weight: 400, p: 0.12}
+  - {family: "Sarai", weight: 400, p: 0.10}
+  - {family: "Nakula", weight: 400, p: 0.08}
+  - {family: "Kalimati", weight: 400, p: 0.08}
+  - {family: "Samanata", weight: 400, p: 0.06}
+ink:                         # body text colour
+  - {color: "#111111", p: 0.45}
+  - {color: "#1a1a5e", p: 0.40}   # blue-black
+  - {color: "#17338f", p: 0.15}   # blue
+align: {justify: 0.8, left: 0.2}
+writer:
+  kind: template              # template | gemini
+  model: gemini-3.8-flash     # as named in the original notebook; unverified
+  concurrency: 32
+  cache_dir: cache/text
+fit: {fill_lo: 0.90, fill_hi: 0.965, max_attempts: 4}
+assets_dir: assets
+compose:                      # stage 2 probabilities (defaults live in compose.py)
+  header_mode: {banner: 0.6, letterhead: 0.25, none: 0.15}
+  footer_mode: {endorsement: 0.5, line: 0.2, none: 0.3}
+  p_overlap_text: 0.45
+  p_text_stamp: 0.65
+  marks: [2, 5]
+  notes: [0, 3]
+skip_assets: []              # asset file stems to leave out, e.g. [stamp1, stamp2] for the stamps that carry 2023 dates
+
+degrade:                     # stage 3, always last
+  enabled: true
+  paired: true               # also save an aligned clean target (same geometry, no damage)
+  use_augraphy: true
+  format: png                # png | jpg (jpg applies the sampled JPEG quality)
+  severity: {light: 0.3, medium: 0.45, heavy: 0.25}
+
+export:                      # stage 4
+  out_dir: out/dataset
+  split: {train: 0.9, val: 0.05, test: 0.05}   # deterministic from the seed, so re-runs and extensions never reshuffle
+  keep_full_record: false    # true also saves the full per-page JSON (entities, lines, slots)

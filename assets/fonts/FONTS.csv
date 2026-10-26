@@ -1,0 +1,34 @@
+family,file,weight,style,role,license,license_file,source,devanagari_coverage_test,shaping_preview
+amita,amita/Amita-Bold.ttf,700,normal,handwriting,SIL OFL 1.1,amita/OFL.txt,https://github.com/google/fonts/tree/main/ofl/amita,pass,pass
+amita,amita/Amita-Regular.ttf,400,normal,handwriting,SIL OFL 1.1,amita/OFL.txt,https://github.com/google/fonts/tree/main/ofl/amita,pass,pass
+halant,halant/Halant-Bold.ttf,700,normal,printed,SIL OFL 1.1,halant/OFL.txt,https://github.com/google/fonts/tree/main/ofl/halant,pass,pass
+halant,halant/Halant-Regular.ttf,400,normal,printed,SIL OFL 1.1,halant/OFL.txt,https://github.com/google/fonts/tree/main/ofl/halant,pass,pass
+hind,hind/Hind-Bold.ttf,700,normal,printed,SIL OFL 1.1,hind/OFL.txt,https://github.com/google/fonts/tree/main/ofl/hind,pass,pass
+hind,hind/Hind-Regular.ttf,400,normal,printed,SIL OFL 1.1,hind/OFL.txt,https://github.com/google/fonts/tree/main/ofl/hind,pass,pass
+kalam,kalam/Kalam-Bold.ttf,700,normal,handwriting,SIL OFL 1.1,kalam/OFL.txt,https://github.com/google/fonts/tree/main/ofl/kalam,pass,pass
+kalam,kalam/Kalam-Light.ttf,300,normal,handwriting,SIL OFL 1.1,kalam/OFL.txt,https://github.com/google/fonts/tree/main/ofl/kalam,pass,pass
+kalam,kalam/Kalam-Regular.ttf,400,normal,handwriting,SIL OFL 1.1,kalam/OFL.txt,https://github.com/google/fonts/tree/main/ofl/kalam,pass,pass
+karma,karma/Karma-Bold.ttf,700,normal,printed,SIL OFL 1.1,karma/OFL.txt,https://github.com/google/fonts/tree/main/ofl/karma,pass,pass
+karma,karma/Karma-Regular.ttf,400,normal,printed,SIL OFL 1.1,karma/OFL.txt,https://github.com/google/fonts/tree/main/ofl/karma,pass,pass
+khula,khula/Khula-Bold.ttf,700,normal,printed,SIL OFL 1.1,khula/OFL.txt,https://github.com/google/fonts/tree/main/ofl/khula,pass,pass
+khula,khula/Khula-Regular.ttf,400,normal,printed,SIL OFL 1.1,khula/OFL.txt,https://github.com/google/fonts/tree/main/ofl/khula,pass,pass
+laila,laila/Laila-Bold.ttf,700,normal,printed,SIL OFL 1.1,laila/OFL.txt,https://github.com/google/fonts/tree/main/ofl/laila,pass,pass
+laila,laila/Laila-Regular.ttf,400,normal,printed,SIL OFL 1.1,laila/OFL.txt,https://github.com/google/fonts/tree/main/ofl/laila,pass,pass
+martel,martel/Martel-Bold.ttf,700,normal,printed,SIL OFL 1.1,martel/OFL.txt,https://github.com/google/fonts/tree/main/ofl/martel,pass,pass
+martel,martel/Martel-Regular.ttf,400,normal,printed,SIL OFL 1.1,martel/OFL.txt,https://github.com/google/fonts/tree/main/ofl/martel,pass,pass
+mukta,mukta/Mukta-Bold.ttf,700,normal,printed,SIL OFL 1.1,mukta/OFL.txt,https://github.com/google/fonts/tree/main/ofl/mukta,pass,pass
+mukta,mukta/Mukta-Regular.ttf,400,normal,printed,SIL OFL 1.1,mukta/OFL.txt,https://github.com/google/fonts/tree/main/ofl/mukta,pass,pass
+palanquin,palanquin/Palanquin-Bold.ttf,700,normal,printed,SIL OFL 1.1,palanquin/OFL.txt,https://github.com/google/fonts/tree/main/ofl/palanquin,pass,pass
+palanquin,palanquin/Palanquin-Regular.ttf,400,normal,printed,SIL OFL 1.1,palanquin/OFL.txt,https://github.com/google/fonts/tree/main/ofl/palanquin,pass,pass
+sahitya,sahitya/Sahitya-Bold.ttf,700,normal,printed,SIL OFL 1.1,sahitya/OFL.txt,https://github.com/google/fonts/tree/main/ofl/sahitya,pass,pass
+sahitya,sahitya/Sahitya-Regular.ttf,400,normal,printed,SIL OFL 1.1,sahitya/OFL.txt,https://github.com/google/fonts/tree/main/ofl/sahitya,pass,pass
+sumana,sumana/Sumana-Bold.ttf,700,normal,printed,SIL OFL 1.1,sumana/OFL.txt,https://github.com/google/fonts/tree/main/ofl/sumana,pass,pass
+sumana,sumana/Sumana-Regular.ttf,400,normal,printed,SIL OFL 1.1,sumana/OFL.txt,https://github.com/google/fonts/tree/main/ofl/sumana,pass,pass
+tirodevanagarihindi,tirodevanagarihindi/TiroDevanagariHindi-Italic.ttf,400,italic,printed,SIL OFL 1.1,tirodevanagarihindi/OFL.txt,https://github.com/google/fonts/tree/main/ofl/tirodevanagarihindi,pass,pass
+tirodevanagarihindi,tirodevanagarihindi/TiroDevanagariHindi-Regular.ttf,400,normal,printed,SIL OFL 1.1,tirodevanagarihindi/OFL.txt,https://github.com/google/fonts/tree/main/ofl/tirodevanagarihindi,pass,pass
+tillana,tillana/Tillana-Regular.ttf,400,normal,handwriting,SIL OFL 1.1,tillana/OFL.txt,https://github.com/google/fonts/tree/main/ofl/tillana,pass,pass
+dekko,dekko/Dekko-Regular.ttf,400,normal,handwriting,SIL OFL 1.1,dekko/OFL.txt,https://github.com/google/fonts/tree/main/ofl/dekko,pass,fail (splits conjuncts; bundled but not enabled)
+playpensansdeva,playpensansdeva/PlaypenSansDeva-Variable.ttf,400,normal,handwriting,SIL OFL 1.1,playpensansdeva/OFL.txt,https://github.com/google/fonts/tree/main/ofl/playpensansdeva,pass,pass
+ranga,ranga/Ranga-Regular.ttf,400,normal,handwriting,SIL OFL 1.1,ranga/OFL.txt,https://github.com/google/fonts/tree/main/ofl/ranga,pass,pass
+yatraone,yatraone/YatraOne-Regular.ttf,400,normal,handwriting,SIL OFL 1.1,yatraone/OFL.txt,https://github.com/google/fonts/tree/main/ofl/yatraone,pass,pass
+jainipurva,jainipurva/JainiPurva-Regular.ttf,400,normal,handwriting,SIL OFL 1.1,jainipurva/OFL.txt,https://github.com/google/fonts/tree/main/ofl/jainipurva,pass,pass

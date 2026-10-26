@@ -1,0 +1,127 @@
+# v2 hard config (stage 1: dense small handwriting). Built on hindi_sale_deed_v2_hand8.yaml; only handwriting.fs differs.
+# v2 config: same as hindi_sale_deed.yaml plus bundled Google Fonts (printed) and bundled Kalam/Amita for margin notes.
+# One config per run. Language and document type are config; code is generic.
+language: hi
+doc_type: sale_deed
+numerals: [latin, devanagari]
+seed_base: 0
+page:
+  sizes: [[1240, 1754], [1240, 1650], [1200, 1800], [1300, 1700], [1100, 1560], [1360, 1760]]   # px, varied per page
+  margin_l: [90, 130]
+  margin_r: [90, 130]
+  margin_t: [40, 80]
+  margin_b: [40, 80]
+  header_h: [150, 260]     # reserved for header artwork in stage 2
+  footer_h: [150, 240]
+  sig_h: 130
+fonts:                       # system family names (apt: fonts-noto-core fonts-deva-extra fonts-gargi fonts-sarai fonts-nakula fonts-lohit-deva)
+  - {family: "Noto Serif Devanagari", weight: 400, p: 0.110}
+  - {family: "Noto Serif Devanagari", weight: 500, p: 0.050}
+  - {family: "Noto Sans Devanagari", weight: 400, p: 0.060}
+  - {family: "Lohit Devanagari", weight: 400, p: 0.060}
+  - {family: "Gargi", weight: 400, p: 0.060}
+  - {family: "Sarai", weight: 400, p: 0.050}
+  - {family: "Nakula", weight: 400, p: 0.040}
+  - {family: "Kalimati", weight: 400, p: 0.040}
+  - {family: "Samanata", weight: 400, p: 0.030}
+  # ---- bundled Google Fonts (SIL OFL). Loaded from assets/fonts with @font-face, nothing to install. `files` maps weight -> file under assets_dir.
+  - {family: "Hind", weight: 400, p: 0.07, files: {400: "fonts/hind/Hind-Regular.ttf", 700: "fonts/hind/Hind-Bold.ttf"}}
+  - {family: "Mukta", weight: 400, p: 0.06, files: {400: "fonts/mukta/Mukta-Regular.ttf", 700: "fonts/mukta/Mukta-Bold.ttf"}}
+  - {family: "Khula", weight: 400, p: 0.04, files: {400: "fonts/khula/Khula-Regular.ttf", 700: "fonts/khula/Khula-Bold.ttf"}}
+  - {family: "Palanquin", weight: 400, p: 0.05, files: {400: "fonts/palanquin/Palanquin-Regular.ttf", 700: "fonts/palanquin/Palanquin-Bold.ttf"}}
+  - {family: "Sahitya", weight: 400, p: 0.05, files: {400: "fonts/sahitya/Sahitya-Regular.ttf", 700: "fonts/sahitya/Sahitya-Bold.ttf"}}
+  - {family: "Martel", weight: 400, p: 0.06, files: {400: "fonts/martel/Martel-Regular.ttf", 700: "fonts/martel/Martel-Bold.ttf"}}
+  - {family: "Karma", weight: 400, p: 0.04, files: {400: "fonts/karma/Karma-Regular.ttf", 700: "fonts/karma/Karma-Bold.ttf"}}
+  - {family: "Halant", weight: 400, p: 0.03, files: {400: "fonts/halant/Halant-Regular.ttf", 700: "fonts/halant/Halant-Bold.ttf"}}
+  - {family: "Laila", weight: 400, p: 0.04, files: {400: "fonts/laila/Laila-Regular.ttf", 700: "fonts/laila/Laila-Bold.ttf"}}
+  - {family: "Sumana", weight: 400, p: 0.03, files: {400: "fonts/sumana/Sumana-Regular.ttf", 700: "fonts/sumana/Sumana-Bold.ttf"}}
+  - {family: "Tiro Devanagari Hindi", weight: 400, p: 0.03, files: {400: "fonts/tirodevanagarihindi/TiroDevanagariHindi-Regular.ttf"}}
+ink:                         # body text colour
+  - {color: "#111111", p: 0.45}
+  - {color: "#1a1a5e", p: 0.40}   # blue-black
+  - {color: "#17338f", p: 0.15}   # blue
+size_plan:                   # v2: how large the body text should be. [min px, max px, weight]; the page is then filled at about that size
+  fs: [[16, 20, 0.20], [20, 27, 0.35], [27, 34, 0.20], [34, 48, 0.25]]     # the last band is large type
+  compact_above: 34          # target sizes from here on use a short-form deed (about 90 words), since the full text cannot be set that large
+  line_height: [1.5, 2.0]
+page_style: {printed: 0.35, hybrid: 0.30, handwritten: 0.35}     # provisional weights; retuned after the calibration run
+handwriting:
+  fonts:                     # handwritten-style fonts. weight = the weight used for body text. 7 enabled families (Kalam, Amita + 5 added from the handwriting-styles branch)
+    - {family: "Kalam", weight: 400, p: 0.20, files: {300: "fonts/kalam/Kalam-Light.ttf", 400: "fonts/kalam/Kalam-Regular.ttf", 700: "fonts/kalam/Kalam-Bold.ttf"}}
+    - {family: "Kalam", weight: 300, p: 0.10, files: {300: "fonts/kalam/Kalam-Light.ttf", 400: "fonts/kalam/Kalam-Regular.ttf", 700: "fonts/kalam/Kalam-Bold.ttf"}}
+    - {family: "Amita", weight: 400, p: 0.14, files: {400: "fonts/amita/Amita-Regular.ttf", 700: "fonts/amita/Amita-Bold.ttf"}}
+    - {family: "Tillana", weight: 400, p: 0.16, files: {400: "fonts/tillana/Tillana-Regular.ttf"}}
+    # Dekko is bundled (assets/fonts/dekko) but NOT enabled: it draws conjuncts as separate letters (e.g. श्री as शुरी, क्षेत्र as कषेतूर), so the image would not match the label text.
+    - {family: "Playpen Sans Deva", weight: 400, p: 0.12, files: {400: "fonts/playpensansdeva/PlaypenSansDeva-Variable.ttf"}}
+    - {family: "Ranga", weight: 400, p: 0.10, files: {400: "fonts/ranga/Ranga-Regular.ttf"}}
+    - {family: "Yatra One", weight: 400, p: 0.08, files: {400: "fonts/yatraone/YatraOne-Regular.ttf"}}
+    - {family: "Jaini Purva", weight: 400, p: 0.10, files: {400: "fonts/jainipurva/JainiPurva-Regular.ttf"}}
+  ink:
+    - {color: "#1a1a5e", p: 0.40}
+    - {color: "#17338f", p: 0.30}
+    - {color: "#111111", p: 0.20}
+    - {color: "#0b2a6f", p: 0.10}
+  jitter: {angle_deg: 1.1, dy_em: 0.035, scale: 0.05, alpha: [0.82, 1.0], skew_deg: 2.5, gap_em: 0.14, line_dy_em: 0.03, line_angle_deg: 0.5}   # per word, plus one wobble per line
+  messy: [0.7, 1.9]          # per page: how untidy the writer is (multiplies the jitter)
+  hard: {max_fs: 23.5, messy: [2.2, 3.0], ink_spread: [0.4, 1.4]}     # hard pages = handwritten pages in the dense band (fs_target <= max_fs): a much untidier hand
+  ink_spread: [0.0, 0.7]     # px of soft glow around the strokes (pen ink bleeding)
+  hybrid_facts: [date, khasra, area, amount_text, amount_words, stamp_duty, seller, buyer, seller_relative, buyer_relative, witnesses]
+  hybrid_digits: true        # any word that contains a digit is also written by hand in hybrid pages
+  fs: [[16, 23, 0.20, [1.25, 1.40]], [22, 28, 0.24], [28, 36, 0.24], [36, 48, 0.32]]    # body size bands (px) for fully handwritten pages. First band: dense small-type pages (20%), own tight line height
+align: {justify: 0.8, left: 0.2}
+writer:
+  kind: template              # template | gemini
+  model: gemini-3.8-flash     # as named in the original notebook; unverified
+  concurrency: 32
+  cache_dir: cache/text
+fit: {fill_lo: 0.90, fill_hi: 0.965, max_attempts: 4}
+assets_dir: assets
+compose:                      # stage 2 probabilities (defaults live in compose.py)
+  header_mode: {banner: 0.6, letterhead: 0.25, none: 0.15}
+  footer_mode: {endorsement: 0.5, line: 0.2, none: 0.3}
+  p_overlap_text: 0.45
+  p_text_stamp: 0.65
+  marks: [2, 5]
+  notes: [0, 3]
+  hard:                      # applied to hard pages only. Stage 2 text effects, stage 3 clutter (stronger compose settings + second pen + signature over text)
+    pressure: [0.55, 1.1]    # pen pressure per word (1.0 = as written)
+    smudge: 0.03             # share of words smudged
+    strike: 0.025            # share of words struck through
+    second_pen: 0.25         # share of consecutive words written with a different pen
+    sig_over: [1, 2]         # signatures scrawled across the text
+    clutter: {marks: [8, 14], notes: [3, 6], stamps: {2: 0.3, 3: 0.4, 4: 0.3}, p_overlap_text: 0.7, p_text_stamp: 0.9}
+note_font_files:             # v2: handwriting-style fonts used for margin notes (same names as `note_fonts`), loaded from assets/fonts
+  Kalam: {300: "fonts/kalam/Kalam-Light.ttf", 400: "fonts/kalam/Kalam-Regular.ttf", 700: "fonts/kalam/Kalam-Bold.ttf"}
+  Amita: {400: "fonts/amita/Amita-Regular.ttf", 700: "fonts/amita/Amita-Bold.ttf"}
+skip_assets: []              # asset file stems to leave out, e.g. [stamp1, stamp2] for the stamps that carry 2023 dates
+
+degrade:                     # stage 3, always last
+  enabled: true
+  paired: true               # also save an aligned clean target (same geometry, no damage)
+  use_augraphy: true
+  format: png                # png | jpg (jpg applies the sampled JPEG quality)
+  severity: {light: 0.3, medium: 0.45, heavy: 0.25}
+  hard:                      # stage 4, applied to hard pages only: local damage (ink fade, show-through, cracked ink on folds, photocopy look, no BadPhotoCopy)
+    p5: {stain: 0.95, low_ink_lines: 0.8, bleed_through: 0.8, bad_photocopy: 0.0}     # chance at stage 5 for these ops (normal pages use the table in step5)
+    photo: {p: 0.4}          # stage 5: chance that a hard page is a phone photo (paper curl, camera angle, hand shadow, thumb, soft focus, grain)
+    soft_scale: 0.6          # blur and resolution loss strength on hard pages (small type must stay recoverable)
+  guardrails: {provisional: true, min_text_contrast: 20, max_occluded_frac: 0.6, min_sharpness_ratio: 0.01}   # provisional limits, measured and logged only. After calibration set the limits from calibrated_difficulty.yaml and add `enforce: true`: a page past a limit is redone one stage lower
+  staged:                    # v2: damage in five nested stages (1 scan wear, 2 paper ageing, 3 ink damage, 4 geometry/physical, 5 severe)
+    enabled: true
+    stage_weights: {1: 0.10, 2: 0.15, 3: 0.25, 4: 0.30, 5: 0.20}     # provisional; retuned after calibration. `severity` above is ignored in staged mode
+    hard_stage_weights: {4: 0.5, 5: 0.5}     # hard pages only: the two severe stages
+    ladder: {enabled: false, splits: [test]}   # true: pages in these splits are written five times (stages 1-5, same layout and same damage recipe)
+
+export:                      # stage 4
+  out_dir: out/dataset
+  split: {train: 0.9, val: 0.05, test: 0.05}   # deterministic from the seed, so re-runs and extensions never reshuffle
+  keep_full_record: false    # true also saves the full per-page JSON (entities, lines, slots)
+
+difficulty:                  # easy / medium / hard label written into every v2 label. PROVISIONAL until tools/calibrate.py has been run on real OCR results
+  enabled: true
+  provisional: true
+  version: 2                 # v2: three hard-page parts added (corrections, density, photo); weights re-balanced to sum to 1
+  weights: {stage: 0.22, contrast: 0.17, sharpness: 0.13, occlusion: 0.13, handwriting: 0.10, small_text: 0.07, font: 0.04, corrections: 0.05, density: 0.06, photo: 0.03}
+  thresholds: {easy_max: 0.22, medium_max: 0.46}
+  font_difficulty: {Amita: 0.5, Kalam: 0.3, "Tiro Devanagari Hindi": 0.15, Tillana: 0.3, "Playpen Sans Deva": 0.25, Ranga: 0.4, "Yatra One": 0.4, "Jaini Purva": 0.55}   # the 5 added fonts are first guesses (provisional like the rest), set by the calibration
+  small_text_px: 22

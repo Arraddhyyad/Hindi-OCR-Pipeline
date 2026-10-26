@@ -1,0 +1,86 @@
+{
+ "id": "doc_0000010",
+ "seed": 10,
+ "page_plan": {
+  "width": 1100,
+  "height": 1560,
+  "margin_l": 90,
+  "margin_r": 103,
+  "margin_t": 69,
+  "margin_b": 71,
+  "header_h": 255,
+  "footer_h": 185,
+  "sig_h": 130,
+  "font_family": "Gargi",
+  "font_file": null,
+  "font_weight": 400,
+  "ink": "#111111",
+  "align": "justify",
+  "line_height": 1.75,
+  "lh_max": 2.15,
+  "fs_min": 15.0,
+  "fs_max": 40.0,
+  "fill_lo": 0.9,
+  "fill_hi": 0.965,
+  "para_gap": 0.55
+ },
+ "entities": {
+  "doc_type": "sale_deed",
+  "language": "hi",
+  "numerals": "latin",
+  "date": "19 जनवरी 1990",
+  "place": "कानपुर नगर",
+  "district": "कानपुर नगर",
+  "tehsil": "सलोन",
+  "village": "नौगाँव",
+  "seller": {
+   "name": "संजय पटेल",
+   "title": "श्री",
+   "female": false,
+   "relation": "पुत्र",
+   "relative": "अशोक श्रीवास्तव",
+   "age": "32"
+  },
+  "buyer": {
+   "name": "भगवानदीन श्रीवास्तव",
+   "title": "श्री",
+   "female": false,
+   "relation": "पुत्र",
+   "relative": "कमलेश सक्सेना",
+   "age": "40"
+  },
+  "property_type": "agricultural",
+  "property_label": "खसरा संख्या 975",
+  "khasra": "975",
+  "area": "5 बीघा 18 बिस्वा",
+  "boundaries": {
+   "पूर्व": "मुन्नालाल सिंह",
+   "पश्चिम": "हरिशंकर तिवारी",
+   "उत्तर": "नंदलाल जायसवाल",
+   "दक्षिण": "भगवानदीन वर्मा"
+  },
+  "amount": 450000,
+  "amount_text": "4,50,000/-",
+  "amount_words": "चार लाख पचास हज़ार रुपये मात्र",
+  "payment": "बैंक ड्राफ्ट संख्या 429634 (यूनियन बैंक ऑफ इंडिया)",
+  "stamp_duty": "31,500/-",
+  "witnesses": [
+   {
+    "name": "हरिशंकर मिश्रा",
+    "village": "पिपरी"
+   },
+   {
+    "name": "जगदीश सक्सेना",
+    "village": "नौगाँव"
+   }
+  ],
+  "registration": {
+   "no": "7701",
+   "year": "1990",
+   "book": "1",
+   "volume": "75",
+   "page": "167",
+   "office": "उप-निबंधक कार्यालय, कानपुर नगर"
+  }
+ }
+}

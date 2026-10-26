@@ -1,0 +1,1 @@
+One page (doc_0000010) with the saved result of every step, its verification overlay, and the verification report of the 24-page demo run. Images are downsized JPEG previews of the PNGs the pipeline writes.

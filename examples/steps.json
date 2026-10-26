@@ -1,0 +1,24 @@
+{
+ "entities": {
+  "status": "ok",
+  "sec": 0.0
+ },
+ "text": {
+  "status": "ok",
+  "attempts": 1,
+  "sec": 0.81
+ },
+ "compose": {
+  "status": "ok",
+  "sec": 1.37
+ },
+ "degrade": {
+  "status": "ok",
+  "sec": 1.39
+ },
+ "label": {
+  "status": "ok",
+  "sec": 0.01
+ },
+ "total_sec": 5.5
+}
