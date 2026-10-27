@@ -6,7 +6,9 @@ from pathlib import Path
 
 from PIL import Image
 
-from benchmark.metrics import char_errors, corpus_rate, edit_distance, rate, word_errors
+from benchmark.metrics import char_errors, corpus_rate, edit_distance, grapheme_errors, median, rate, word_errors
+from benchmark.graphemes import graphemes
+from benchmark.facts import fact_hits
 from benchmark.normalize import normalize
 from benchmark import run as bench_run
 from benchmark import ocr_backends
@@ -47,6 +49,51 @@ class TestMetrics(unittest.TestCase):
         self.assertEqual(rate(3, 0), 1.0)
 
 
+class TestGraphemes(unittest.TestCase):
+    def test_conjunct_and_matra_are_one_letter(self):
+        self.assertEqual(graphemes("क्षेत्र"), ["क्षे", "त्र"])
+        self.assertEqual(graphemes("हिंदी"), ["हिं", "दी"])
+        self.assertEqual(graphemes("ab c"), ["a", "b", " ", "c"])
+
+    def test_one_wrong_matra_is_one_letter_error(self):
+        # same word, one vowel sign different: 1 error in letters, but counted as 1 of 3 here, not 2 characters
+        e, n = grapheme_errors("किताब", "कीताब")
+        self.assertEqual((e, n), (1, 3))
+        ce, cn = char_errors("किताब", "कीताब")
+        self.assertEqual((ce, cn), (1, 5))
+
+
+class TestMedianAndFailed(unittest.TestCase):
+    def test_median(self):
+        self.assertEqual(median([0.1, 0.9, 0.2]), 0.2)
+        self.assertEqual(median([0.1, 0.3]), 0.2)
+        self.assertEqual(median([]), 0.0)
+
+
+class TestFacts(unittest.TestCase):
+    FACTS = ["२ सितंबर १९७५", "अमरपुर", "१८,५०,०००/-", "शांति गुप्ता"]
+
+    def test_all_found_even_with_other_digit_style(self):
+        hyp = "दिनांक 2 सितंबर 1975 ग्राम अमरपुर रुपये 18,50,000/- श्रीमती शांति गुप्ता"
+        h = fact_hits(self.FACTS, hyp)
+        self.assertEqual((h["n"], h["exact"], h["num_n"], h["num_exact"]), (4, 4, 2, 2))
+
+    def test_missing_fact_not_counted(self):
+        h = fact_hits(self.FACTS, "ग्राम अमरपुर")
+        self.assertEqual((h["exact"], h["num_exact"]), (1, 0))
+
+    def test_empty(self):
+        self.assertEqual(fact_hits([], "x")["n"], 0)
+        self.assertEqual(fact_hits(None, "x")["n"], 0)
+
+    def test_close_catches_small_slip(self):
+        from benchmark import facts
+        if facts._fuzz is None:
+            self.skipTest("rapidfuzz not installed")
+        h = fact_hits(["शांति गुप्ता"], "श्रीमती शांती गुप्ता ने")      # one vowel sign different
+        self.assertEqual((h["exact"], h["close"]), (0, 1))
+
+
 def make_dataset(root, n=6):
     """Tiny fake dataset: blank images + labels with the same keys the real generator writes."""
     d = Path(root) / "dataset" / "train"
@@ -58,6 +105,7 @@ def make_dataset(root, n=6):
         Image.new("RGB", (40, 40), "white").save(d / f"{stem}_target.png")
         (d / f"{stem}.json").write_text(json.dumps({
             "transcript": "यह विक्रय पत्र आज दिनांक २ सितंबर १९७५ को लिखा गया " * 3,
+            "facts": ["२ सितंबर १९७५", "विक्रय पत्र"],
             "difficulty": {"class": classes[i % 3], "score": 0.1},
             "stage": {"stage": 1 + i % 5},
             "style": {"page_style": "printed" if i % 2 else "handwritten"},
@@ -126,6 +174,88 @@ class TestTesseractDecoding(unittest.TestCase):
         with mock.patch("subprocess.run", return_value=fake):
             with self.assertRaises(RuntimeError):
                 ocr_backends.Tesseract().read("page.png")
+
+
+class TestReportColumns(unittest.TestCase):
+    def test_new_columns_and_values(self):
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        ds = make_dataset(tmp.name)
+        out = Path(tmp.name) / "out"
+        bench_run.main(["--set", f"T={ds}", "--backend", "fake_perfect", "--out", str(out)])
+        md = (out / "summary.md").read_text(encoding="utf-8")
+        for col in ("medCER", "failed", "gCER", "facts close", "numbers"):
+            self.assertIn(col, md)
+        import csv
+        with open(out / "results.csv", encoding="utf-8") as f:
+            rows = list(csv.DictReader(f))
+        self.assertTrue(all(float(r["gCER"]) == 0 and r["fact_n"] == "2" and r["fact_exact"] == "2" for r in rows))
+
+    def test_failed_share_counts_pages_above_half(self):
+        rows = [{"set": "T", "k": "x", "CER": c, "char_err": 0, "char_len": 1, "g_err": 0, "g_len": 1,
+                 "word_err": 0, "word_len": 1, **{"fact_" + k: 0 for k in bench_run.FACT_KEYS}} for c in (0.1, 0.6, 0.9, 0.2)]
+        s = bench_run.summarize(rows, "k")[0]
+        self.assertEqual(s["failed"], 0.5)
+        self.assertAlmostEqual(s["medCER"], 0.4)
+
+
+class TestSpread(unittest.TestCase):
+    def test_spread_is_even_and_stable(self):
+        items = list(range(100))
+        pick = bench_run.pick_spread(items, 5)
+        self.assertEqual(pick, [0, 25, 50, 74, 99])      # first and last page included
+        self.assertEqual(pick, bench_run.pick_spread(items, 5))
+        self.assertEqual(bench_run.pick_spread(items, 500), items)
+
+    def test_run_with_spread(self):
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        ds = make_dataset(tmp.name, 6)
+        out = Path(tmp.name) / "out"
+        bench_run.main(["--set", f"T={ds}", "--backend", "fake_perfect", "--out", str(out), "--spread", "3"])
+        import csv
+        with open(out / "results.csv", encoding="utf-8") as f:
+            self.assertEqual(len(list(csv.DictReader(f))), 3)
+
+
+class TestControl(unittest.TestCase):
+    def test_control_pages_and_labels(self):
+        from benchmark import make_control
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        src = make_dataset(tmp.name, 3)
+        rendered = []
+
+        def fake_render(html_path, png_path, height):
+            rendered.append(height)
+            html = Path(html_path).read_text(encoding="utf-8")
+            self.assertIn("विक्रय पत्र", html)          # the page text is in the page
+            Image.new("RGB", (40, 40), "white").save(png_path)
+
+        out = Path(tmp.name) / "ctl"
+        font = Path(tmp.name) / "f.ttf"
+        font.write_bytes(b"x")
+        n = make_control.make_control(src, out, font, 26, render=fake_render)
+        self.assertEqual(n, 3)
+        label = json.loads((out / "train" / "doc_0000000.json").read_text(encoding="utf-8"))
+        self.assertEqual(label["difficulty"]["class"], "control")
+        self.assertTrue(label["transcript"].startswith("यह विक्रय"))
+        self.assertTrue(all(h > 200 for h in rendered))
+        # the control set can be scored like any other set
+        res = Path(tmp.name) / "res"
+        bench_run.main(["--set", f"P={out}", "--backend", "fake_perfect", "--out", str(res)])
+        self.assertIn("control", (res / "summary.md").read_text(encoding="utf-8"))
+
+    def test_height_grows_with_text(self):
+        from benchmark.make_control import page_height
+        self.assertGreater(page_height("क" * 3000, 26), page_height("क" * 300, 26))
+
+
+class TestBackendNames(unittest.TestCase):
+    def test_unknown_backend_lists_choices(self):
+        with self.assertRaises(ValueError) as cm:
+            ocr_backends.get_backend("nope")
+        self.assertIn("qwen_vl", str(cm.exception))
 
 
 if __name__ == "__main__":

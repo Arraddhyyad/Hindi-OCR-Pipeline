@@ -53,7 +53,12 @@ class EasyOCR:
 
     def __init__(self):
         import easyocr
-        self.reader = easyocr.Reader(["hi", "en"], gpu=False, verbose=False)
+        try:
+            import torch
+            use_gpu = torch.cuda.is_available()
+        except Exception:
+            use_gpu = False
+        self.reader = easyocr.Reader(["hi", "en"], gpu=use_gpu, verbose=False)
 
     def read(self, image_path):
         res = self.reader.readtext(str(image_path))   # [(box, text, conf)]
@@ -74,6 +79,42 @@ class EasyOCR:
         return "\n".join(lines)
 
 
+class QwenVL:
+    """A page-reading vision-language model from Hugging Face (needs a GPU; made for Colab).
+    Default is a small Qwen model that fits a free T4. Bigger ones: pass model_id and load_4bit=True.
+    The model reads the whole page and returns plain text. Slow: about a minute or more per dense page."""
+    PROMPT = ("Read all the text in this image exactly as written. The text is Hindi (Devanagari). "
+              "Output only the text, line by line in reading order. Do not translate, explain or summarise.")
+
+    def __init__(self, model_id=None, max_new_tokens=3500, load_4bit=False):
+        import torch
+        from transformers import AutoModelForImageTextToText, AutoProcessor
+        self.model_id = model_id or "Qwen/Qwen2.5-VL-3B-Instruct"
+        self.name = "qwenvl_" + self.model_id.split("/")[-1]
+        self.max_new_tokens = max_new_tokens
+        kw = {"device_map": "auto"}
+        if load_4bit:
+            from transformers import BitsAndBytesConfig
+            kw["quantization_config"] = BitsAndBytesConfig(load_in_4bit=True, bnb_4bit_compute_dtype=torch.float16)
+        else:
+            kw["torch_dtype"] = torch.float16
+        self.model = AutoModelForImageTextToText.from_pretrained(self.model_id, **kw)
+        # a page is about 1300x1800 px: keep full resolution so small Hindi stays readable
+        self.processor = AutoProcessor.from_pretrained(self.model_id, min_pixels=256 * 28 * 28, max_pixels=3_300_000)
+        self.torch = torch
+
+    def read(self, image_path):
+        from PIL import Image
+        img = Image.open(image_path).convert("RGB")
+        messages = [{"role": "user", "content": [{"type": "image"}, {"type": "text", "text": self.PROMPT}]}]
+        prompt = self.processor.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+        inputs = self.processor(text=[prompt], images=[img], return_tensors="pt").to(self.model.device)
+        with self.torch.no_grad():
+            out = self.model.generate(**inputs, max_new_tokens=self.max_new_tokens, do_sample=False)
+        new_tokens = out[:, inputs["input_ids"].shape[1]:]
+        return self.processor.batch_decode(new_tokens, skip_special_tokens=True)[0]
+
+
 def get_backend(name, answers=None, **kw):
     if name == "fake_perfect":
         return FakePerfect(answers)
@@ -83,4 +124,6 @@ def get_backend(name, answers=None, **kw):
         return Tesseract(**kw)
     if name == "easyocr":
         return EasyOCR()
-    raise ValueError(f"unknown backend {name!r}. Choose: fake_perfect, fake_noisy, tesseract, easyocr")
+    if name == "qwen_vl":
+        return QwenVL(**kw)
+    raise ValueError(f"unknown backend {name!r}. Choose: fake_perfect, fake_noisy, tesseract, easyocr, qwen_vl")

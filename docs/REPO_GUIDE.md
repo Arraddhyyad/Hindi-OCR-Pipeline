@@ -23,7 +23,11 @@ python -m benchmark.run --set A=data/benchmark_v1/setA_standard/dataset \
 ```
 It writes `summary.md` (error rates by difficulty, damage stage and page style) and `results.csv` (one row per page). Predictions are saved per page, so a re-run only does what is missing.
 
-Backends: `tesseract` (needs the Hindi model, `hin`), `easyocr`, and two fake ones used only by the tests.
+Backends: `tesseract` (needs the Hindi model, `hin`), `easyocr`, `qwen_vl` (a page-reading model, needs a GPU), and two fake ones used only by the tests.
+- `--spread N` scores N pages per set, spread evenly (use it for slow readers). `--limit N` takes the first N.
+- `python -m benchmark.make_control --src <dataset> --out <dataset>` makes the printed control (needs Edge or Chrome).
+- `benchmark/colab_benchmark.ipynb` runs EasyOCR and the page-reading model on Colab.
+- What every number means: `docs/SCORING.md`.
 
 ## Later: one command for everything
 When the handwriting step works, a single script will chain: generate pages, put handwriting in, damage, benchmark.

@@ -31,6 +31,23 @@ def word_errors(ref, hyp):
     return edit_distance(r, h), len(r)
 
 
+def grapheme_errors(ref, hyp):
+    """(errors, reference length) counted in letters as a reader sees them (base letter plus marks)."""
+    from .graphemes import graphemes
+    return edit_distance(graphemes(ref), graphemes(hyp)), len(graphemes(ref))
+
+
+def median(values):
+    v = sorted(values)
+    if not v:
+        return 0.0
+    m = len(v) // 2
+    return v[m] if len(v) % 2 else (v[m - 1] + v[m]) / 2
+
+
+CATASTROPHIC = 0.5   # a page with more than this share of wrong characters counts as a failed read
+
+
 def rate(errors, length):
     if length == 0:
         return 0.0 if errors == 0 else 1.0
