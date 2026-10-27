@@ -39,11 +39,12 @@ class Tesseract:
         self.name = f"tesseract_{lang}_psm{psm}"
 
     def read(self, image_path):
+        # Read raw bytes and decode as UTF-8 ourselves. text=True would use the Windows code page and crash on Devanagari.
         r = subprocess.run(["tesseract", str(image_path), "-", "-l", self.lang, "--psm", str(self.psm)],
-                           capture_output=True, text=True, timeout=300)
+                           capture_output=True, timeout=300)
         if r.returncode != 0:
-            raise RuntimeError(r.stderr.strip()[:300])
-        return r.stdout
+            raise RuntimeError(r.stderr.decode("utf-8", "replace").strip()[:300])
+        return r.stdout.decode("utf-8", "replace")
 
 
 class EasyOCR:

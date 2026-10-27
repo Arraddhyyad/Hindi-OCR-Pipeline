@@ -9,6 +9,7 @@ from PIL import Image
 from benchmark.metrics import char_errors, corpus_rate, edit_distance, rate, word_errors
 from benchmark.normalize import normalize
 from benchmark import run as bench_run
+from benchmark import ocr_backends
 
 
 class TestNormalize(unittest.TestCase):
@@ -104,6 +105,27 @@ class TestEndToEnd(unittest.TestCase):
         f.write_text("EDITED", encoding="utf-8")      # a re-run must read this file, not call the OCR again
         bench_run.main(args)
         self.assertIn("EDITED", f.read_text(encoding="utf-8"))
+
+
+class TestTesseractDecoding(unittest.TestCase):
+    def test_utf8_output_is_decoded_not_cp1252(self):
+        """Regression: on Windows, text=True used cp1252 and crashed on Devanagari output."""
+        import subprocess
+        from unittest import mock
+        out_bytes = "यह विक्रय पत्र\n".encode("utf-8")
+        fake = subprocess.CompletedProcess(args=[], returncode=0, stdout=out_bytes, stderr=b"")
+        with mock.patch("subprocess.run", return_value=fake) as m:
+            text = ocr_backends.Tesseract().read("page.png")
+        self.assertEqual(text.strip(), "यह विक्रय पत्र")
+        self.assertNotIn("text", m.call_args.kwargs)    # must not ask subprocess to decode for us
+
+    def test_failure_raises_with_message(self):
+        import subprocess
+        from unittest import mock
+        fake = subprocess.CompletedProcess(args=[], returncode=1, stdout=b"", stderr=b"Error: no hin model")
+        with mock.patch("subprocess.run", return_value=fake):
+            with self.assertRaises(RuntimeError):
+                ocr_backends.Tesseract().read("page.png")
 
 
 if __name__ == "__main__":
