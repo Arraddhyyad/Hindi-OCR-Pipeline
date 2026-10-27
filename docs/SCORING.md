@@ -20,6 +20,13 @@ Error rate = (substitutions + deletions + insertions) divided by the length of t
 - **medCER**: the median page, not the pooled rate. One looping or empty output can pull a pooled average far up, so look at both.
 - **failed**: the share of pages with CER above 50%. A page like that is a failed read, not a slightly wrong one.
 
+### Where the errors come from: missed and extra
+Every character error is one of three kinds: a wrong letter (substitution), a letter the reader missed (deletion), or a letter the reader added that is not in the answer key (insertion). The tables report:
+- **missed** = (wrong + lost letters) divided by the key length. This is the reader's own failure.
+- **extra** = added letters divided by the key length. On our pages this is mostly stamps, header artwork, margin notes and overlap text, which the reader sees but the key does not list.
+- **CER = missed + extra**, exactly.
+So a page with high CER but low missed is a page where the reader did its job and our page added text it was never asked to skip. `results.csv` keeps the three counts per page (`c_sub`, `c_del`, `c_ins`). When two alignments are equally good the split between wrong and lost can differ slightly between tools, but missed + extra never changes.
+
 ## 3. Fact recall (`benchmark/facts.py`)
 Each page label lists its key facts (names, places, dates, plot number, area, amounts in digits and in words, cheque number, stamp duty). A fact counts as found if it appears in the OCR text after cleaning.
 - **facts**: found word for word.
@@ -34,7 +41,7 @@ Rows are grouped by the page's difficulty label (easy, medium, hard), damage sta
 The same text as each page, in a plain font on a white page, with no stamps, notes or damage. It shows how well a reader does on the text alone. The gap between the control and a clean benchmark page is the cost of our layout (stamps, notes, handwriting fonts), and the gap between the clean and the damaged copy is the cost of the damage.
 
 ## 6. Known limits
-- The answer key is the scored text only. Stamps, margin notes and overlap text are not in it, but a reader will read them, so they count as insertions. That raises every reader's error on every page by a similar amount.
+- The answer key is the scored text only. Stamps, margin notes and overlap text are not in it, but a reader will read them, so they count as insertions (the **extra** column). Use **missed** to compare readers on the text that matters.
 - Reading order is not scored separately. Lines are compared as one stream of words.
 - Struck-through words are in the answer key (they are visible text). `transcript_marked` in the label shows them with `~~`.
 - Provisional: the difficulty classes come from weights that have not been calibrated against real OCR results.

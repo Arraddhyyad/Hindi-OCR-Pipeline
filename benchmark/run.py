@@ -13,7 +13,7 @@ from collections import defaultdict
 from pathlib import Path
 
 from .facts import fact_hits
-from .metrics import CATASTROPHIC, char_errors, corpus_rate, grapheme_errors, median, rate, word_errors
+from .metrics import CATASTROPHIC, char_errors, corpus_rate, edit_ops, grapheme_errors, median, rate, word_errors
 from .normalize import normalize
 from .ocr_backends import get_backend
 
@@ -67,12 +67,13 @@ def read_cached(backend, image, cache_file):
 
 
 def score_page(ref, hyp, digits="latin"):
-    """(char errors, char len, word errors, word len, grapheme errors, grapheme len)."""
+    """(char errors, char len, word errors, word len, grapheme errors, grapheme len, substitutions, deletions, insertions)."""
     ref, hyp = normalize(ref, digits), normalize(hyp, digits)
-    ce, cn = char_errors(ref, hyp)
+    sub, dele, ins = edit_ops(ref, hyp)
+    cn = len(ref)
     we, wn = word_errors(ref, hyp)
     ge, gn = grapheme_errors(ref, hyp)
-    return ce, cn, we, wn, ge, gn
+    return sub + dele + ins, cn, we, wn, ge, gn, sub, dele, ins
 
 
 def summarize(rows, key):
@@ -86,6 +87,9 @@ def summarize(rows, key):
         out.append({
             "set": s, key: g, "pages": len(rs),
             "CER": corpus_rate([(r["char_err"], r["char_len"]) for r in rs]),
+            # CER = missed + extra. missed: key letters the reader got wrong or lost. extra: text the reader added that is not in the key.
+            "missed": corpus_rate([(r["c_sub"] + r["c_del"], r["char_len"]) for r in rs]),
+            "extra": corpus_rate([(r["c_ins"], r["char_len"]) for r in rs]),
             "medCER": median([r["CER"] for r in rs]),
             "failed": sum(r["CER"] > CATASTROPHIC for r in rs) / len(rs),
             "gCER": corpus_rate([(r["g_err"], r["g_len"]) for r in rs]),
@@ -102,7 +106,7 @@ def _pct(v):
 
 
 CSV_COLS = ["set", "page", "image_kind", "difficulty", "stage", "style", "char_err", "char_len", "word_err", "word_len",
-            "g_err", "g_len", "CER", "WER", "gCER"] + ["fact_" + k for k in FACT_KEYS]
+            "g_err", "g_len", "c_sub", "c_del", "c_ins", "CER", "WER", "gCER"] + ["fact_" + k for k in FACT_KEYS]
 
 
 def write_report(rows, out_dir, backend_name):
@@ -115,15 +119,16 @@ def write_report(rows, out_dir, backend_name):
     lines = [f"# Benchmark: {backend_name}", "",
              "CER, gCER, WER: pooled error rates (letters, Devanagari letter clusters, words). medCER: median page. "
              f"Failed: share of pages with CER above {CATASTROPHIC:.0%}. Facts: names, dates and amounts found word for word "
-             "(close: with small slips). Numbers: the numeric facts only. See docs/SCORING.md.", ""]
-    head = "| set | {k} | pages | CER | medCER | failed | gCER | WER | facts | facts close | numbers |"
+             "(close: with small slips). Numbers: the numeric facts only. CER = missed + extra: missed is key letters the reader got wrong "
+             "or lost, extra is text the reader added that is not in the key (stamps, notes, stray marks). See docs/SCORING.md.", ""]
+    head = "| set | {k} | pages | CER | missed | extra | medCER | failed | gCER | WER | facts | facts close | numbers |"
     for kind in sorted({r["image_kind"] for r in rows}):
         sub = [r for r in rows if r["image_kind"] == kind]
         lines += [f"## Images: {kind} ({len(sub)} pages)", ""]
         for key in ("difficulty", "stage", "style"):
-            lines += [f"### By {key}", "", head.format(k=key), "|---|---|---|---|---|---|---|---|---|---|---|"]
+            lines += [f"### By {key}", "", head.format(k=key), "|---|---|---|---|---|---|---|---|---|---|---|---|---|"]
             for s in summarize(sub, key):
-                lines.append(f"| {s['set']} | {s[key]} | {s['pages']} | {_pct(s['CER'])} | {_pct(s['medCER'])} | "
+                lines.append(f"| {s['set']} | {s[key]} | {s['pages']} | {_pct(s['CER'])} | {_pct(s['missed'])} | {_pct(s['extra'])} | {_pct(s['medCER'])} | "
                              f"{_pct(s['failed'])} | {_pct(s['gCER'])} | {_pct(s['WER'])} | {_pct(s['facts'])} | "
                              f"{_pct(s['facts_close'])} | {_pct(s['numbers'])} |")
             lines.append("")
@@ -174,10 +179,11 @@ def main(argv=None):
             if path is None:
                 continue
             hyp = read_cached(backend, path, out / "preds" / backend.name / name / (path.stem + ".txt"))
-            ce, cn, we, wn, ge, gn = score_page(ref, hyp, a.digits)
+            ce, cn, we, wn, ge, gn, c_sub, c_del, c_ins = score_page(ref, hyp, a.digits)
             fh = fact_hits(label.get("facts"), hyp, a.digits)
             rows.append({"set": name, "page": stem, "image_kind": kind, **tags(label),
                          "char_err": ce, "char_len": cn, "word_err": we, "word_len": wn, "g_err": ge, "g_len": gn,
+                         "c_sub": c_sub, "c_del": c_del, "c_ins": c_ins,
                          "CER": rate(ce, cn), "WER": rate(we, wn), "gCER": rate(ge, gn),
                          **{"fact_" + k: fh[k] for k in FACT_KEYS}})
         if n % 10 == 0:

@@ -6,7 +6,7 @@ from pathlib import Path
 
 from PIL import Image
 
-from benchmark.metrics import char_errors, corpus_rate, edit_distance, grapheme_errors, median, rate, word_errors
+from benchmark.metrics import char_errors, corpus_rate, edit_distance, edit_ops, grapheme_errors, median, rate, word_errors
 from benchmark.graphemes import graphemes
 from benchmark.facts import fact_hits
 from benchmark.normalize import normalize
@@ -47,6 +47,41 @@ class TestMetrics(unittest.TestCase):
     def test_empty_reference(self):
         self.assertEqual(rate(0, 0), 0.0)
         self.assertEqual(rate(3, 0), 1.0)
+
+
+class TestErrorSplit(unittest.TestCase):
+    def test_each_kind(self):
+        self.assertEqual(edit_ops("abcd", "abxd"), (1, 0, 0))       # one wrong letter
+        self.assertEqual(edit_ops("abcd", "abd"), (0, 1, 0))        # one missed letter
+        self.assertEqual(edit_ops("abd", "abcd"), (0, 0, 1))        # one extra letter
+        self.assertEqual(edit_ops("", "abc"), (0, 0, 3))
+        self.assertEqual(edit_ops("abc", ""), (0, 3, 0))
+
+    def test_parts_always_add_up_to_the_distance(self):
+        import random
+        rng = random.Random(3)
+        for _ in range(200):
+            a = "".join(rng.choice("अआकखग ") for _ in range(rng.randint(0, 25)))
+            b = "".join(rng.choice("अआकखग ") for _ in range(rng.randint(0, 25)))
+            self.assertEqual(sum(edit_ops(a, b)), edit_distance(a, b), (a, b))
+
+    def test_extra_text_is_extra_not_missed(self):
+        # the OCR read every key letter and also the stamp text: nothing missed, all error is extra
+        ref = "यह विक्रय पत्र आज दिनांक"
+        out = bench_run.score_page(ref, ref + " FOR TRAINING NON-VALID SAMPLE")
+        ce, cn, we, wn, ge, gn, sub, dele, ins = out
+        self.assertEqual((sub, dele), (0, 0))
+        self.assertGreater(ins, 20)
+        self.assertEqual(ce, ins)
+
+    def test_missed_plus_extra_is_cer_in_the_report(self):
+        rows = [{"set": "T", "k": "x", "CER": 0.0, "char_err": 6, "char_len": 20, "g_err": 0, "g_len": 1,
+                 "word_err": 0, "word_len": 1, "c_sub": 2, "c_del": 1, "c_ins": 3,
+                 **{"fact_" + k: 0 for k in bench_run.FACT_KEYS}}]
+        s = bench_run.summarize(rows, "k")[0]
+        self.assertAlmostEqual(s["missed"], 0.15)
+        self.assertAlmostEqual(s["extra"], 0.15)
+        self.assertAlmostEqual(s["missed"] + s["extra"], s["CER"])
 
 
 class TestGraphemes(unittest.TestCase):
@@ -193,7 +228,8 @@ class TestReportColumns(unittest.TestCase):
 
     def test_failed_share_counts_pages_above_half(self):
         rows = [{"set": "T", "k": "x", "CER": c, "char_err": 0, "char_len": 1, "g_err": 0, "g_len": 1,
-                 "word_err": 0, "word_len": 1, **{"fact_" + k: 0 for k in bench_run.FACT_KEYS}} for c in (0.1, 0.6, 0.9, 0.2)]
+                 "word_err": 0, "word_len": 1, "c_sub": 0, "c_del": 0, "c_ins": 0,
+                 **{"fact_" + k: 0 for k in bench_run.FACT_KEYS}} for c in (0.1, 0.6, 0.9, 0.2)]
         s = bench_run.summarize(rows, "k")[0]
         self.assertEqual(s["failed"], 0.5)
         self.assertAlmostEqual(s["medCER"], 0.4)

@@ -20,6 +20,44 @@ def edit_distance(a, b):
     return prev[-1]
 
 
+def edit_ops(a, b):
+    """(substitutions, deletions, insertions) of one best way to turn a (the answer key) into b (the OCR text).
+    substitution = a wrong letter, deletion = a letter the reader missed, insertion = extra text the reader wrote.
+    Their sum is always the edit distance. When two ways are equally good the split can differ a little by tool, the total never does."""
+    if _Lev is not None:
+        sub = dele = ins = 0
+        for tag, _, _ in _Lev.editops(a, b):
+            if tag == "replace":
+                sub += 1
+            elif tag == "delete":
+                dele += 1
+            else:
+                ins += 1
+        return sub, dele, ins
+    n, m = len(a), len(b)
+    d = [[0] * (m + 1) for _ in range(n + 1)]
+    for i in range(n + 1):
+        d[i][0] = i
+    for j in range(m + 1):
+        d[0][j] = j
+    for i in range(1, n + 1):
+        for j in range(1, m + 1):
+            d[i][j] = min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] != b[j - 1]))
+    sub = dele = ins = 0
+    i, j = n, m
+    while i or j:
+        if i and j and d[i][j] == d[i - 1][j - 1] + (a[i - 1] != b[j - 1]):
+            sub += a[i - 1] != b[j - 1]
+            i, j = i - 1, j - 1
+        elif i and d[i][j] == d[i - 1][j] + 1:
+            dele += 1
+            i -= 1
+        else:
+            ins += 1
+            j -= 1
+    return sub, dele, ins
+
+
 def char_errors(ref, hyp):
     """(errors, reference length) counted in characters, spaces included."""
     return edit_distance(ref, hyp), len(ref)
