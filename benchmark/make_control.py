@@ -11,7 +11,9 @@ import math
 import os
 import shutil
 import subprocess
+import sys
 import tempfile
+import time
 from pathlib import Path
 
 PAGE_W = 1240
@@ -57,14 +59,51 @@ def page_height(text, size):
     return int(lines * size * 1.7 + lines * 0.5 * size * 0.3 + 200)
 
 
+def _kill(proc):
+    """Stop the browser and anything it started (Edge leaves helper processes behind)."""
+    if proc.poll() is None:
+        if sys.platform == "win32":
+            subprocess.run(["taskkill", "/F", "/T", "/PID", str(proc.pid)], capture_output=True)
+        else:
+            proc.kill()
+    try:
+        proc.wait(timeout=10)
+    except Exception:
+        pass
+
+
+def run_until_file(cmd, png_path, wait=90):
+    """Start the browser and return as soon as the screenshot file is complete (its size stops changing).
+    Headless Edge often writes the file and then does not exit, so we do not wait for it to exit."""
+    png_path = Path(png_path)
+    if png_path.exists():
+        png_path.unlink()
+    proc = subprocess.Popen(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    t0, last, stable = time.time(), -1, 0
+    try:
+        while time.time() - t0 < wait:
+            if png_path.exists():
+                size = png_path.stat().st_size
+                stable = stable + 1 if (size > 0 and size == last) else 0
+                last = size
+                if stable >= 2:
+                    return
+            elif proc.poll() is not None:
+                break                      # the browser quit without writing anything
+            time.sleep(0.5)
+    finally:
+        _kill(proc)
+    if not (png_path.exists() and png_path.stat().st_size > 0):
+        raise RuntimeError("browser did not write a screenshot")
+
+
 def render_page(html_path, png_path, height, browser=None):
     browser = browser or find_browser()
+    png_path = Path(png_path).resolve()
     cmd = [browser, "--headless", "--disable-gpu", "--no-sandbox", "--hide-scrollbars", "--force-device-scale-factor=1",
            "--default-background-color=FFFFFFFF", f"--window-size={PAGE_W},{height}",
-           f"--screenshot={Path(png_path).resolve()}", Path(html_path).resolve().as_uri()]
-    r = subprocess.run(cmd, capture_output=True, timeout=120)
-    if not Path(png_path).exists():
-        raise RuntimeError("browser did not write a screenshot: " + r.stderr.decode("utf-8", "replace")[-300:])
+           f"--screenshot={png_path}", Path(html_path).resolve().as_uri()]
+    run_until_file(cmd, png_path)
 
 
 def make_control(src, out, font_file, size=26, render=render_page, limit=None):
@@ -84,6 +123,9 @@ def make_control(src, out, font_file, size=26, render=render_page, limit=None):
                 text = label.get("transcript", "")
                 dest = Path(out) / split
                 dest.mkdir(parents=True, exist_ok=True)
+                if (dest / (lab.stem + ".png")).exists() and (dest / (lab.stem + ".json")).exists():
+                    n += 1                  # done in an earlier run (the label is written last)
+                    continue
                 hp = Path(tmp) / (lab.stem + ".html")
                 hp.write_text(page_html(text, font_file, size), encoding="utf-8")
                 render(hp, dest / (lab.stem + ".png"), page_height(text, size))

@@ -246,6 +246,44 @@ class TestControl(unittest.TestCase):
         bench_run.main(["--set", f"P={out}", "--backend", "fake_perfect", "--out", str(res)])
         self.assertIn("control", (res / "summary.md").read_text(encoding="utf-8"))
 
+    def test_rerun_skips_finished_pages(self):
+        from benchmark import make_control
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        src = make_dataset(tmp.name, 3)
+        calls = []
+
+        def fake_render(html_path, png_path, height):
+            calls.append(1)
+            Image.new("RGB", (40, 40), "white").save(png_path)
+
+        font = Path(tmp.name) / "f.ttf"
+        font.write_bytes(b"x")
+        out = Path(tmp.name) / "ctl"
+        make_control.make_control(src, out, font, 26, render=fake_render, limit=2)
+        self.assertEqual(len(calls), 2)
+        n = make_control.make_control(src, out, font, 26, render=fake_render)
+        self.assertEqual((n, len(calls)), (3, 3))        # only the missing page was drawn
+
+    def test_browser_that_writes_the_file_but_never_exits(self):
+        """Regression: headless Edge on Windows wrote the screenshot and then hung."""
+        import sys
+        import time
+        from benchmark.make_control import run_until_file
+        png = Path(tempfile.mkdtemp()) / "shot.png"
+        code = f"import time; open(r'{png}', 'wb').write(b'x' * 100); time.sleep(120)"
+        t0 = time.time()
+        run_until_file([sys.executable, "-c", code], png, wait=30)
+        self.assertLess(time.time() - t0, 20)
+        self.assertTrue(png.exists())
+
+    def test_browser_that_writes_nothing_raises(self):
+        import sys
+        from benchmark.make_control import run_until_file
+        png = Path(tempfile.mkdtemp()) / "none.png"
+        with self.assertRaises(RuntimeError):
+            run_until_file([sys.executable, "-c", "pass"], png, wait=10)
+
     def test_height_grows_with_text(self):
         from benchmark.make_control import page_height
         self.assertGreater(page_height("क" * 3000, 26), page_height("क" * 300, 26))
