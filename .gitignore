@@ -2,3 +2,13 @@ runs/
 __pycache__/
 *.pyc
 .DS_Store
+# add these lines to your existing .gitignore
+.venv/
+.venv-flux/
+flux_data/
+data/*
+!data/README.md
+runs/
+runs_benchmark/
+*.zip
+.DS_Store
