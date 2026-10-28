@@ -12,6 +12,14 @@ Language and document type live in the config (`config/hindi_sale_deed.yaml`), n
 
 System needs: Python 3.10+, Chromium (Playwright's or `CHROME_PATH`), Devanagari fonts (see `setup.sh`: Noto Serif/Sans Devanagari, Lohit, Gargi, Sarai, Nakula, Kalimati, Samanata). `python main.py info` checks them.
 
+## Results and benchmark
+How well can an OCR reader read these pages? Start here:
+- **Dashboard (web page):** https://arraddhyyad.github.io/Hindi-OCR-Pipeline/dashboard/ (the same story as Markdown: `docs/dashboard/README.md`)
+- **Compare OCR readers:** use `benchmark/` (scoring rules in `docs/SCORING.md`, commands in `docs/REPO_GUIDE.md`). `pipeline/step8_evaluate.py` is the older Gemini read-back scorer; for comparing readers use `benchmark/`.
+- **Raw results:** `docs/results/`
+- **Handwriting step (experiments):** `handwriting/`, on its own branch until it works.
+- **The pages used for the benchmark** are not in git, see `data/README.md`.
+
 ## The pipeline (one file per step in `pipeline/`)
 | Step | File | What happens |
 |---|---|---|
@@ -21,7 +29,8 @@ System needs: Python 3.10+, Chromium (Playwright's or `CHROME_PATH`), Devanagari
 | 4 | `step4_compose.py` (+ `assets.py`, `imaging.py`) | Paper, header, footer, overlapping text, stamps, signatures, thumbprints, ticks/ovals/underlines/strikes on real word boxes, margin notes, blue/black inks — from `assets/`. Multiply-blended; every element recorded with a polygon and a `scored` flag. |
 | 5 | `step5_degrade.py` | **Always last.** Stains, ink blots, ink thickness, folds (always), torn edge (always), bleed-through, rotation, perspective, page bend, lighting, shadow, specks, contrast, photocopy, resample, blur, noise, JPEG. Geometry ops move every stored polygon. An aligned clean target is saved. |
 | 6 | `step6_export.py` | Compact label per page, deterministic train/val/test split (hash of seed), dataset folder. |
-| 7 | `step8_evaluate.py` | OCR read-back (Gemini / fake), CER, grapheme-CER, WER, token-F1, fact recall, per-severity and per-degradation breakdown, error taxonomy. |
+| 7 | `step7_verify.py` | Checks every page: facts present, boxes on ink, damage as specified (see Verification below). |
+| 8 | `step8_evaluate.py` | OCR read-back (Gemini / fake), CER, grapheme-CER, WER, token-F1, fact recall, per-severity and per-degradation breakdown, error taxonomy. |
 `pipeline/orchestrator.py` runs steps 1–6 per page and saves each step; `pipeline/common.py` has config/logging; `main.py` is the CLI.
 
 ## Verification (step 7) — how you know a page is right
