@@ -1,0 +1,227 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Hindi OCR benchmark</title>
+<style>
+:root{--bg:#fff;--fg:#1f2328;--mut:#59636e;--line:#d1d9e0;--card:#f6f8fa;--acc:#3b6ea5}
+@media (prefers-color-scheme:dark){:root{--bg:#0d1117;--fg:#e6edf3;--mut:#9198a1;--line:#30363d;--card:#151b23;--acc:#7aa7d6}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 -apple-system,Segoe UI,Helvetica,Arial,sans-serif}
+main{max-width:860px;margin:0 auto;padding:32px 16px 64px}
+h1{font-size:30px;line-height:1.2;margin:0 0 6px}h2{font-size:21px;margin:44px 0 12px}
+.sub{color:var(--mut);margin:0 0 20px;font-size:14px}p{margin:10px 0}li{margin:8px 0}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin:18px 0}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.tile b{display:block;font-size:34px;line-height:1.1;color:var(--acc)}.tile span{font-weight:600}.tile small{display:block;color:var(--mut);margin-top:4px}
+.step{display:grid;grid-template-columns:34px 1fr;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin:10px 0}
+.num{width:30px;height:30px;border-radius:50%;background:var(--acc);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:600}
+.step h3{margin:0 0 2px;font-size:16px}.step p{margin:2px 0}.why{color:var(--mut)}
+figure{margin:20px 0}figcaption{color:var(--mut);font-size:14px}svg{width:100%;height:auto;display:block}
+.imgs{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px;margin:12px 0}
+.imgs figure{margin:0}.imgs img{width:100%;border:1px solid var(--line);border-radius:6px;display:block}.imgs figcaption{margin-top:4px;font-size:13px}
+table{border-collapse:collapse;width:100%;font-size:14px}th,td{border-bottom:1px solid var(--line);padding:6px 8px;text-align:left}
+th{color:var(--mut);font-weight:600}details{margin:16px 0}summary{cursor:pointer;font-weight:600}
+dl{display:grid;grid-template-columns:max-content 1fr;gap:6px 14px;margin:10px 0}dt{font-weight:600}dd{margin:0;color:var(--mut)}
+.paper{border-left:3px solid var(--acc);padding:2px 0 2px 14px;margin:14px 0}.paper a{font-weight:600;color:var(--acc)}
+.foot{color:var(--mut);font-size:13px;margin-top:40px;border-top:1px solid var(--line);padding-top:12px}
+</style></head><body><main>
+<h1>How well can a computer read our fake Hindi deeds?</h1><p class="sub">Reader tested: Tesseract. 265 pages scored. Page file made 2026-10-27.</p>
+<div class="tiles"><div class="tile"><b>0.6</b><span>Clean printed copy</span><small>letters wrong or missed out of 100. 84% of key facts found.</small></div><div class="tile"><b>14</b><span>Easy damaged pages</span><small>letters wrong or missed out of 100. 62% of key facts found.</small></div><div class="tile"><b>25</b><span>Medium damaged pages</span><small>letters wrong or missed out of 100. 44% of key facts found.</small></div><div class="tile"><b>58</b><span>Hard damaged pages</span><small>letters wrong or missed out of 100. 18% of key facts found.</small></div></div>
+<p>We made fake Hindi sale deeds where we know every name, date and amount. We damaged them step by step, then asked a free reading program to read each page and checked its answer against what we know is written.</p>
+<h2>What stands out</h2>
+<ul><li><strong>The harder the page, the more the reader misses.</strong> Out of 100 letters it gets wrong or loses 14 on easy pages, 25 on medium and 58 on hard.</li><li><strong>Damage is a big part of it.</strong> The same hard pages without any damage lose 18 out of 100, so the damage adds about 41.</li><li><strong>Handwriting-style text is harder than printed text.</strong> 56 out of 100 lost on handwriting-style pages, against 34 on printed ones.</li><li><strong>Our hardest handwriting set is close to unreadable for this reader.</strong> It finds 2.2% of the key facts and 100% of the pages count as failed.</li><li><strong>Numbers are the weak spot.</strong> Even on the clean printed copy only 52% of numbers are read exactly, against 84% for all facts, because single digits slip.</li><li><strong>Part of the error is not the reader's fault.</strong> On printed pages, 12 of every 24 counted errors are extra text (stamps, notes and header art the reader sees but our answer does not list).</li></ul>
+<h2>What we did, and why</h2>
+<div class="step"><div class="num">1</div><div><h3>Write fake deeds</h3><p>We decide every name, date, place and amount first, then write the deed text from them.</p><p class="why">Why: So we always know the right answer for every page.</p></div></div>
+<div class="step"><div class="num">2</div><div><h3>Draw the pages</h3><p>Each deed is drawn like a real page: fonts, headers, stamps, signatures, thumbprints, margin notes, some handwriting-style text.</p><p class="why">Why: Real deeds are messy, and a reader trained or tested on neat pages will not cope with them.</p></div></div>
+<div class="step"><div class="num">3</div><div><h3>Damage them in 5 steps</h3><p>Folds, tears, blur, ink marks, scan noise, increasing from stage 1 to stage 5. From light to severe: 1 scan wear, 2 paper ageing, 3 ink damage, 4 geometry and physical, 5 severe.</p><p class="why">Why: We want to know at which point a reader breaks, so the damage grows in steps.</p></div></div>
+<div class="step"><div class="num">4</div><div><h3>Label each page easy, medium or hard</h3><p>A score from how much of the text is covered, how faint it is, and how much is handwriting or small print.</p><p class="why">Why: So we can say how bad a page is without running a reader. The label is a first version and still needs checking against real pages.</p></div></div>
+<div class="step"><div class="num">5</div><div><h3>Make a clean printed copy as a control</h3><p>The same text in a plain printed font on a white page, nothing damaged.</p><p class="why">Why: It shows how good the reader is when the page is fine. Any drop on our pages is then due to the pages, not the reader.</p></div></div>
+<div class="step"><div class="num">6</div><div><h3>Let the reader read every page</h3><p>Tesseract reads each page and we compare its text with the answer, letter by letter and fact by fact.</p><p class="why">Why: The same cleaning and the same rules apply to every reader, so results can be compared.</p></div></div>
+<div class="step"><div class="num">7</div><div><h3>Group the results</h3><p>By how hard the page is, damage stage and kind of text. Also a clean copy of each page, to separate damage from everything else.</p><p class="why">Why: To see what makes pages hard, not only how hard they are.</p></div></div>
+<h2>What the pages look like</h2>
+<p>The same page, from clean to severe damage.</p>
+<div class="imgs"><figure><img src="img/ladder_clean.jpg" alt="Before any damage (clean copy)" loading="lazy"><figcaption>Before any damage (clean copy)</figcaption></figure><figure><img src="img/ladder_1.jpg" alt="Stage 1: scan wear" loading="lazy"><figcaption>Stage 1: scan wear</figcaption></figure><figure><img src="img/ladder_2.jpg" alt="Stage 2: paper ageing" loading="lazy"><figcaption>Stage 2: paper ageing</figcaption></figure><figure><img src="img/ladder_3.jpg" alt="Stage 3: ink damage" loading="lazy"><figcaption>Stage 3: ink damage</figcaption></figure><figure><img src="img/ladder_4.jpg" alt="Stage 4: geometry and physical" loading="lazy"><figcaption>Stage 4: geometry and physical</figcaption></figure><figure><img src="img/ladder_5.jpg" alt="Stage 5: severe" loading="lazy"><figcaption>Stage 5: severe</figcaption></figure></div>
+<p>Other kinds of page we test on.</p>
+<div class="imgs"><figure><img src="img/ex_printed.jpg" alt="Printed text, damage stage 3 (ink damage), rated medium" loading="lazy"><figcaption>Printed text, damage stage 3 (ink damage), rated medium</figcaption></figure><figure><img src="img/ex_mixed.jpg" alt="Printed with handwritten parts, damage stage 3 (ink damage), rated medium" loading="lazy"><figcaption>Printed with handwritten parts, damage stage 3 (ink damage), rated medium</figcaption></figure><figure><img src="img/ex_handwritten.jpg" alt="Handwriting-style text, damage stage 3 (ink damage), rated hard" loading="lazy"><figcaption>Handwriting-style text, damage stage 3 (ink damage), rated hard</figcaption></figure><figure><img src="img/ex_setB.jpg" alt="Hard handwriting set: Handwriting-style text, damage stage 4 (geometry and physical), rated hard" loading="lazy"><figcaption>Hard handwriting set: Handwriting-style text, damage stage 4 (geometry and physical), rated hard</figcaption></figure></div>
+<h2>Results</h2>
+<dl><dt>Wrong or missed letters</dt><dd>letters in the answer that the reader got wrong or left out, per 100 letters of the answer. Lower is better.</dd><dt>Extra letters</dt><dd>text the reader wrote that is not in the answer. On our pages it is mostly stamps and notes.</dd><dt>Key facts found</dt><dd>names, places, dates and amounts from the answer that appear exactly in the reader&#x27;s text.</dd><dt>Failed page</dt><dd>more than half of the letters wrong.</dd></dl>
+<figure><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 216" role="img" aria-label="Letters wrong per 100, by kind of page">
+<style>text{font:12px -apple-system,Segoe UI,Helvetica,Arial,sans-serif;fill:#7d8590}.h{font-weight:600}.a{fill:#3b6ea5}.b{fill:#d98a3d}.c{fill:#b7bec6}.g{stroke:#7d8590;stroke-opacity:.25}</style>
+<title>Letters wrong per 100, by kind of page</title>
+<rect class="a" x="230" y="10" width="12" height="12" rx="2"/><text x="247" y="20">missed or wrong</text>
+<rect class="b" x="360" y="10" width="12" height="12" rx="2"/><text x="377" y="20">extra (not in the answer)</text>
+<text x="220" y="54" text-anchor="end">Clean printed copy</text>
+<rect class="a" x="230" y="40" width="2.6" height="22" rx="2"/>
+<rect class="b" x="232.6" y="40" width="0.6" height="22" rx="2"/>
+<text x="239.2" y="56">0.7</text>
+<text x="220" y="88" text-anchor="end">Damaged pages, easy</text>
+<rect class="a" x="230" y="74" width="60.5" height="22" rx="2"/>
+<rect class="b" x="290.5" y="74" width="38.2" height="22" rx="2"/>
+<text x="334.7" y="90">23</text>
+<text x="220" y="122" text-anchor="end">Damaged pages, medium</text>
+<rect class="a" x="230" y="108" width="106.8" height="22" rx="2"/>
+<rect class="b" x="336.8" y="108" width="43.5" height="22" rx="2"/>
+<text x="386.3" y="124">35</text>
+<text x="220" y="156" text-anchor="end">Damaged pages, hard</text>
+<rect class="a" x="230" y="142" width="251.0" height="22" rx="2"/>
+<rect class="b" x="481.0" y="142" width="18.6" height="22" rx="2"/>
+<text x="505.6" y="158">63</text>
+<text x="220" y="190" text-anchor="end">Hard handwriting set</text>
+<rect class="a" x="230" y="176" width="371.9" height="22" rx="2"/>
+<rect class="b" x="601.9" y="176" width="2.0" height="22" rx="2"/>
+<text x="609.9" y="192">87</text>
+</svg><figcaption>Each bar is the number of letters out of 100 that the reader got wrong, lost, or added.</figcaption></figure>
+<figure><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 330" role="img" aria-label="Letters missed per 100, by damage stage">
+<style>text{font:12px -apple-system,Segoe UI,Helvetica,Arial,sans-serif;fill:#7d8590}.h{font-weight:600}.a{fill:#3b6ea5}.b{fill:#d98a3d}.c{fill:#b7bec6}.g{stroke:#7d8590;stroke-opacity:.25}</style>
+<title>Letters missed per 100, by damage stage</title>
+<line class="g" x1="44" x2="706" y1="278.0" y2="278.0"/>
+<text x="38" y="282.0" text-anchor="end">0</text>
+<line class="g" x1="44" x2="706" y1="219.5" y2="219.5"/>
+<text x="38" y="223.5" text-anchor="end">20</text>
+<line class="g" x1="44" x2="706" y1="161.0" y2="161.0"/>
+<text x="38" y="165.0" text-anchor="end">40</text>
+<line class="g" x1="44" x2="706" y1="102.5" y2="102.5"/>
+<text x="38" y="106.5" text-anchor="end">60</text>
+<line class="g" x1="44" x2="706" y1="44.0" y2="44.0"/>
+<text x="38" y="48.0" text-anchor="end">80</text>
+<rect class="c" x="44" y="12" width="12" height="12" rx="2"/><text x="61" y="22">Same pages, no damage</text>
+<rect class="a" x="210.5" y="12" width="12" height="12" rx="2"/><text x="227.5" y="22">Damaged page</text>
+<rect class="c" x="66.2" y="224.3" width="42.0" height="53.7" rx="2"/>
+<text x="87.2" y="220.3" text-anchor="middle">18</text>
+<rect class="a" x="112.2" y="228.9" width="42.0" height="49.1" rx="2"/>
+<text x="133.2" y="224.9" text-anchor="middle">17</text>
+<text x="110.2" y="296" text-anchor="middle">Stage 1</text>
+<rect class="c" x="198.6" y="231.6" width="42.0" height="46.4" rx="2"/>
+<text x="219.6" y="227.6" text-anchor="middle">16</text>
+<rect class="a" x="244.6" y="234.2" width="42.0" height="43.8" rx="2"/>
+<text x="265.6" y="230.2" text-anchor="middle">15</text>
+<text x="242.6" y="296" text-anchor="middle">Stage 2</text>
+<rect class="c" x="331.0" y="236.0" width="42.0" height="42.0" rx="2"/>
+<text x="352.0" y="232.0" text-anchor="middle">14</text>
+<rect class="a" x="377.0" y="192.6" width="42.0" height="85.4" rx="2"/>
+<text x="398.0" y="188.6" text-anchor="middle">29</text>
+<text x="375.0" y="296" text-anchor="middle">Stage 3</text>
+<rect class="c" x="463.4" y="234.5" width="42.0" height="43.5" rx="2"/>
+<text x="484.4" y="230.5" text-anchor="middle">15</text>
+<rect class="a" x="509.4" y="159.2" width="42.0" height="118.8" rx="2"/>
+<text x="530.4" y="155.2" text-anchor="middle">41</text>
+<text x="507.4" y="296" text-anchor="middle">Stage 4</text>
+<rect class="c" x="595.8" y="225.8" width="42.0" height="52.2" rx="2"/>
+<text x="616.8" y="221.8" text-anchor="middle">18</text>
+<rect class="a" x="641.8" y="83.1" width="42.0" height="194.9" rx="2"/>
+<text x="662.8" y="79.1" text-anchor="middle">67</text>
+<text x="639.8" y="296" text-anchor="middle">Stage 5</text>
+</svg><figcaption>More damage means more missed letters. The grey bars show the same pages without damage, so the gap is what damage costs.</figcaption></figure>
+<figure><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 330" role="img" aria-label="Letters missed per 100, by kind of text">
+<style>text{font:12px -apple-system,Segoe UI,Helvetica,Arial,sans-serif;fill:#7d8590}.h{font-weight:600}.a{fill:#3b6ea5}.b{fill:#d98a3d}.c{fill:#b7bec6}.g{stroke:#7d8590;stroke-opacity:.25}</style>
+<title>Letters missed per 100, by kind of text</title>
+<line class="g" x1="44" x2="706" y1="278.0" y2="278.0"/>
+<text x="38" y="282.0" text-anchor="end">0</text>
+<line class="g" x1="44" x2="706" y1="219.5" y2="219.5"/>
+<text x="38" y="223.5" text-anchor="end">15</text>
+<line class="g" x1="44" x2="706" y1="161.0" y2="161.0"/>
+<text x="38" y="165.0" text-anchor="end">30</text>
+<line class="g" x1="44" x2="706" y1="102.5" y2="102.5"/>
+<text x="38" y="106.5" text-anchor="end">45</text>
+<line class="g" x1="44" x2="706" y1="44.0" y2="44.0"/>
+<text x="38" y="48.0" text-anchor="end">60</text>
+<rect class="c" x="44" y="12" width="12" height="12" rx="2"/><text x="61" y="22">Same pages, no damage</text>
+<rect class="a" x="210.5" y="12" width="12" height="12" rx="2"/><text x="227.5" y="22">Damaged page</text>
+<rect class="c" x="110.3" y="232.2" width="42.0" height="45.8" rx="2"/>
+<text x="131.3" y="228.2" text-anchor="middle">12</text>
+<rect class="a" x="156.3" y="145.1" width="42.0" height="132.9" rx="2"/>
+<text x="177.3" y="141.1" text-anchor="middle">34</text>
+<text x="154.3" y="296" text-anchor="middle">Printed</text>
+<rect class="c" x="331.0" y="217.4" width="42.0" height="60.6" rx="2"/>
+<text x="352.0" y="213.4" text-anchor="middle">16</text>
+<rect class="a" x="377.0" y="145.4" width="42.0" height="132.6" rx="2"/>
+<text x="398.0" y="141.4" text-anchor="middle">34</text>
+<text x="375.0" y="296" text-anchor="middle">Mixed</text>
+<rect class="c" x="551.7" y="180.6" width="42.0" height="97.4" rx="2"/>
+<text x="572.7" y="176.6" text-anchor="middle">25</text>
+<rect class="a" x="597.7" y="59.1" width="42.0" height="218.9" rx="2"/>
+<text x="618.7" y="55.1" text-anchor="middle">56</text>
+<text x="595.7" y="296" text-anchor="middle">Handwriting-style</text>
+</svg><figcaption>Printed text is easiest. Handwriting-style text is hardest, even before damage.</figcaption></figure>
+<figure><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 330" role="img" aria-label="Key facts found, out of 100">
+<style>text{font:12px -apple-system,Segoe UI,Helvetica,Arial,sans-serif;fill:#7d8590}.h{font-weight:600}.a{fill:#3b6ea5}.b{fill:#d98a3d}.c{fill:#b7bec6}.g{stroke:#7d8590;stroke-opacity:.25}</style>
+<title>Key facts found, out of 100</title>
+<line class="g" x1="44" x2="706" y1="278.0" y2="278.0"/>
+<text x="38" y="282.0" text-anchor="end">0</text>
+<line class="g" x1="44" x2="706" y1="219.5" y2="219.5"/>
+<text x="38" y="223.5" text-anchor="end">25</text>
+<line class="g" x1="44" x2="706" y1="161.0" y2="161.0"/>
+<text x="38" y="165.0" text-anchor="end">50</text>
+<line class="g" x1="44" x2="706" y1="102.5" y2="102.5"/>
+<text x="38" y="106.5" text-anchor="end">75</text>
+<line class="g" x1="44" x2="706" y1="44.0" y2="44.0"/>
+<text x="38" y="48.0" text-anchor="end">100</text>
+<rect class="a" x="44" y="12" width="12" height="12" rx="2"/><text x="61" y="22">All key facts</text>
+<rect class="b" x="158.5" y="12" width="12" height="12" rx="2"/><text x="175.5" y="22">Numbers only</text>
+<rect class="a" x="66.2" y="80.7" width="42.0" height="197.3" rx="2"/>
+<text x="87.2" y="76.7" text-anchor="middle">84</text>
+<rect class="b" x="112.2" y="156.1" width="42.0" height="121.9" rx="2"/>
+<text x="133.2" y="152.1" text-anchor="middle">52</text>
+<text x="110.2" y="296" text-anchor="middle">Clean printed</text>
+<text x="110.2" y="310" text-anchor="middle">copy</text>
+<rect class="a" x="198.6" y="131.8" width="42.0" height="146.2" rx="2"/>
+<text x="219.6" y="127.8" text-anchor="middle">62</text>
+<rect class="b" x="244.6" y="173.7" width="42.0" height="104.3" rx="2"/>
+<text x="265.6" y="169.7" text-anchor="middle">45</text>
+<text x="242.6" y="296" text-anchor="middle">Easy</text>
+<rect class="a" x="331.0" y="176.0" width="42.0" height="102.0" rx="2"/>
+<text x="352.0" y="172.0" text-anchor="middle">44</text>
+<rect class="b" x="377.0" y="220.4" width="42.0" height="57.6" rx="2"/>
+<text x="398.0" y="216.4" text-anchor="middle">25</text>
+<text x="375.0" y="296" text-anchor="middle">Medium</text>
+<rect class="a" x="463.4" y="235.0" width="42.0" height="43.0" rx="2"/>
+<text x="484.4" y="231.0" text-anchor="middle">18</text>
+<rect class="b" x="509.4" y="254.5" width="42.0" height="23.5" rx="2"/>
+<text x="530.4" y="250.5" text-anchor="middle">10</text>
+<text x="507.4" y="296" text-anchor="middle">Hard</text>
+<rect class="a" x="595.8" y="272.7" width="42.0" height="5.3" rx="2"/>
+<text x="616.8" y="268.7" text-anchor="middle">2.2</text>
+<rect class="b" x="641.8" y="278.0" width="42.0" height="0.5" rx="2"/>
+<text x="662.8" y="274.0" text-anchor="middle">0.0</text>
+<text x="639.8" y="296" text-anchor="middle">Hard</text>
+<text x="639.8" y="310" text-anchor="middle">handwriting</text>
+</svg><figcaption>This is what matters for a deed: who sold what to whom, and for how much. Numbers are the hardest part.</figcaption></figure>
+<figure><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 330" role="img" aria-label="Failed pages, out of 100">
+<style>text{font:12px -apple-system,Segoe UI,Helvetica,Arial,sans-serif;fill:#7d8590}.h{font-weight:600}.a{fill:#3b6ea5}.b{fill:#d98a3d}.c{fill:#b7bec6}.g{stroke:#7d8590;stroke-opacity:.25}</style>
+<title>Failed pages, out of 100</title>
+<line class="g" x1="44" x2="706" y1="278.0" y2="278.0"/>
+<text x="38" y="282.0" text-anchor="end">0</text>
+<line class="g" x1="44" x2="706" y1="219.5" y2="219.5"/>
+<text x="38" y="223.5" text-anchor="end">25</text>
+<line class="g" x1="44" x2="706" y1="161.0" y2="161.0"/>
+<text x="38" y="165.0" text-anchor="end">50</text>
+<line class="g" x1="44" x2="706" y1="102.5" y2="102.5"/>
+<text x="38" y="106.5" text-anchor="end">75</text>
+<line class="g" x1="44" x2="706" y1="44.0" y2="44.0"/>
+<text x="38" y="48.0" text-anchor="end">100</text>
+<rect class="a" x="44" y="12" width="12" height="12" rx="2"/><text x="61" y="22">Failed pages</text>
+<rect class="a" x="105.8" y="278.0" width="42.0" height="0.5" rx="2"/>
+<text x="126.8" y="274.0" text-anchor="middle">0.0</text>
+<text x="126.8" y="296" text-anchor="middle">Easy</text>
+<rect class="a" x="271.2" y="191.1" width="42.0" height="86.9" rx="2"/>
+<text x="292.2" y="187.1" text-anchor="middle">37</text>
+<text x="292.2" y="296" text-anchor="middle">Medium</text>
+<rect class="a" x="436.8" y="130.0" width="42.0" height="148.0" rx="2"/>
+<text x="457.8" y="126.0" text-anchor="middle">63</text>
+<text x="457.8" y="296" text-anchor="middle">Hard</text>
+<rect class="a" x="602.2" y="44.0" width="42.0" height="234.0" rx="2"/>
+<text x="623.2" y="40.0" text-anchor="middle">100</text>
+<text x="623.2" y="296" text-anchor="middle">Hard</text>
+<text x="623.2" y="310" text-anchor="middle">handwriting</text>
+</svg><figcaption>A page fails when more than half of its letters are wrong.</figcaption></figure>
+<details><summary>All the numbers</summary>
+<table><thead><tr><th>Group</th><th>Pages</th><th>Letters missed per 100</th><th>Extra per 100</th><th>Key facts found</th><th>Numbers found</th><th>Failed pages</th></tr></thead><tbody><tr><td>Damaged, set A, difficulty easy</td><td>16</td><td>14</td><td>8.9</td><td>62%</td><td>45%</td><td>0.0%</td></tr><tr><td>Damaged, set A, difficulty hard</td><td>49</td><td>58</td><td>4.3</td><td>18%</td><td>10%</td><td>63%</td></tr><tr><td>Damaged, set A, difficulty medium</td><td>35</td><td>25</td><td>10</td><td>44%</td><td>25%</td><td>37%</td></tr><tr><td>Damaged, set B, difficulty hard</td><td>40</td><td>86</td><td>0.5</td><td>2.2%</td><td>0.0%</td><td>100%</td></tr><tr><td>Damaged, set C, difficulty easy</td><td>6</td><td>6.9</td><td>16</td><td>66%</td><td>48%</td><td>33%</td></tr><tr><td>Damaged, set C, difficulty hard</td><td>11</td><td>64</td><td>12</td><td>17%</td><td>11%</td><td>82%</td></tr><tr><td>Damaged, set C, difficulty medium</td><td>8</td><td>31</td><td>15</td><td>43%</td><td>36%</td><td>50%</td></tr><tr><td>Damaged, set P, difficulty control</td><td>100</td><td>0.6</td><td>0.1</td><td>84%</td><td>52%</td><td>0.0%</td></tr><tr><td>Damaged, set A, style handwritten</td><td>28</td><td>56</td><td>7.4</td><td>17%</td><td>11%</td><td>68%</td></tr><tr><td>Damaged, set A, style hybrid</td><td>31</td><td>34</td><td>8.3</td><td>29%</td><td>13%</td><td>35%</td></tr><tr><td>Damaged, set A, style printed</td><td>41</td><td>34</td><td>6.3</td><td>50%</td><td>33%</td><td>34%</td></tr><tr><td>Damaged, set B, style handwritten</td><td>40</td><td>86</td><td>0.5</td><td>2.2%</td><td>0.0%</td><td>100%</td></tr><tr><td>Damaged, set C, style handwritten</td><td>10</td><td>57</td><td>15</td><td>13%</td><td>3.6%</td><td>80%</td></tr><tr><td>Damaged, set C, style hybrid</td><td>5</td><td>24</td><td>39</td><td>41%</td><td>30%</td><td>100%</td></tr><tr><td>Damaged, set C, style printed</td><td>10</td><td>22</td><td>8.5</td><td>60%</td><td>51%</td><td>20%</td></tr><tr><td>Damaged, set P, style printed</td><td>100</td><td>0.6</td><td>0.1</td><td>84%</td><td>52%</td><td>0.0%</td></tr><tr><td>Damaged, set A, stage 1</td><td>8</td><td>17</td><td>12</td><td>44%</td><td>29%</td><td>25%</td></tr><tr><td>Damaged, set A, stage 2</td><td>11</td><td>15</td><td>14</td><td>50%</td><td>33%</td><td>27%</td></tr><tr><td>Damaged, set A, stage 3</td><td>29</td><td>29</td><td>9.4</td><td>44%</td><td>28%</td><td>31%</td></tr><tr><td>Damaged, set A, stage 4</td><td>31</td><td>41</td><td>5.6</td><td>29%</td><td>15%</td><td>48%</td></tr><tr><td>Damaged, set A, stage 5</td><td>21</td><td>67</td><td>1.8</td><td>16%</td><td>9.4%</td><td>71%</td></tr><tr><td>Damaged, set B, stage 4</td><td>20</td><td>78</td><td>0.9</td><td>4.2%</td><td>0.0%</td><td>100%</td></tr><tr><td>Damaged, set B, stage 5</td><td>20</td><td>95</td><td>0.0</td><td>0.2%</td><td>0.0%</td><td>100%</td></tr><tr><td>Damaged, set C, stage 1</td><td>5</td><td>15</td><td>19</td><td>48%</td><td>32%</td><td>40%</td></tr><tr><td>Damaged, set C, stage 2</td><td>5</td><td>11</td><td>18</td><td>49%</td><td>36%</td><td>40%</td></tr><tr><td>Damaged, set C, stage 3</td><td>5</td><td>35</td><td>13</td><td>42%</td><td>36%</td><td>60%</td></tr><tr><td>Damaged, set C, stage 4</td><td>5</td><td>57</td><td>12</td><td>28%</td><td>21%</td><td>80%</td></tr><tr><td>Damaged, set C, stage 5</td><td>5</td><td>58</td><td>8.5</td><td>19%</td><td>14%</td><td>80%</td></tr><tr><td>Damaged, set P, stage 0</td><td>100</td><td>0.6</td><td>0.1</td><td>84%</td><td>52%</td><td>0.0%</td></tr><tr><td>Clean copy, set A, difficulty easy</td><td>16</td><td>11</td><td>8.8</td><td>63%</td><td>41%</td><td>0.0%</td></tr><tr><td>Clean copy, set A, difficulty hard</td><td>49</td><td>18</td><td>16</td><td>42%</td><td>25%</td><td>33%</td></tr><tr><td>Clean copy, set A, difficulty medium</td><td>35</td><td>16</td><td>13</td><td>49%</td><td>30%</td><td>37%</td></tr><tr><td>Clean copy, set B, difficulty hard</td><td>40</td><td>50</td><td>6.2</td><td>15%</td><td>9.1%</td><td>70%</td></tr><tr><td>Clean copy, set C, difficulty easy</td><td>6</td><td>9.6</td><td>12</td><td>64%</td><td>52%</td><td>33%</td></tr><tr><td>Clean copy, set C, difficulty hard</td><td>11</td><td>25</td><td>20</td><td>34%</td><td>21%</td><td>45%</td></tr><tr><td>Clean copy, set C, difficulty medium</td><td>8</td><td>12</td><td>18</td><td>53%</td><td>40%</td><td>38%</td></tr><tr><td>Clean copy, set A, style handwritten</td><td>28</td><td>25</td><td>17</td><td>24%</td><td>15%</td><td>46%</td></tr><tr><td>Clean copy, set A, style hybrid</td><td>31</td><td>16</td><td>14</td><td>39%</td><td>16%</td><td>29%</td></tr><tr><td>Clean copy, set A, style printed</td><td>41</td><td>12</td><td>12</td><td>71%</td><td>49%</td><td>17%</td></tr><tr><td>Clean copy, set B, style handwritten</td><td>40</td><td>50</td><td>6.2</td><td>15%</td><td>9.1%</td><td>70%</td></tr><tr><td>Clean copy, set C, style handwritten</td><td>10</td><td>24</td><td>23</td><td>24%</td><td>13%</td><td>50%</td></tr><tr><td>Clean copy, set C, style hybrid</td><td>5</td><td>24</td><td>45</td><td>38%</td><td>27%</td><td>100%</td></tr><tr><td>Clean copy, set C, style printed</td><td>10</td><td>8.4</td><td>6.6</td><td>76%</td><td>60%</td><td>0.0%</td></tr><tr><td>Clean copy, set A, stage 1</td><td>8</td><td>18</td><td>15</td><td>41%</td><td>20%</td><td>25%</td></tr><tr><td>Clean copy, set A, stage 2</td><td>11</td><td>16</td><td>13</td><td>48%</td><td>30%</td><td>36%</td></tr><tr><td>Clean copy, set A, stage 3</td><td>29</td><td>14</td><td>14</td><td>53%</td><td>31%</td><td>28%</td></tr><tr><td>Clean copy, set A, stage 4</td><td>31</td><td>15</td><td>15</td><td>47%</td><td>29%</td><td>32%</td></tr><tr><td>Clean copy, set A, stage 5</td><td>21</td><td>18</td><td>13</td><td>46%</td><td>30%</td><td>24%</td></tr><tr><td>Clean copy, set B, stage 4</td><td>20</td><td>45</td><td>5.9</td><td>18%</td><td>10%</td><td>60%</td></tr><tr><td>Clean copy, set B, stage 5</td><td>20</td><td>55</td><td>6.5</td><td>13%</td><td>7.8%</td><td>80%</td></tr><tr><td>Clean copy, set C, stage 1</td><td>5</td><td>13</td><td>19</td><td>46%</td><td>36%</td><td>40%</td></tr><tr><td>Clean copy, set C, stage 2</td><td>5</td><td>15</td><td>17</td><td>47%</td><td>39%</td><td>40%</td></tr><tr><td>Clean copy, set C, stage 3</td><td>5</td><td>14</td><td>17</td><td>49%</td><td>32%</td><td>40%</td></tr><tr><td>Clean copy, set C, stage 4</td><td>5</td><td>15</td><td>16</td><td>48%</td><td>32%</td><td>40%</td></tr><tr><td>Clean copy, set C, stage 5</td><td>5</td><td>20</td><td>14</td><td>46%</td><td>32%</td><td>40%</td></tr></tbody></table>
+</details>
+<h2>Why Tesseract as the first reader</h2>
+<ul><li>It is free, runs on a normal laptop, and has a Hindi language file, so anyone on the team can repeat the test.</li><li>It is the usual starting point for OCR, so the numbers mean something to other people.</li><li>It reads text only, with no AI guessing missing words, so its mistakes show what the page itself does to a reader.</li><li>It is a starting point, not the best reader. A second reader and an AI model that reads whole pages are set up in the code but not run yet.</li></ul>
+<h2>Two papers behind this</h2>
+<div class="paper"><a href="https://arxiv.org/abs/2208.14558">Augraphy: A Data Augmentation Library for Document Images</a><br><span class="why">Groleau and colleagues, ICDAR 2023</span><p>Why we read it: it shows how to make a clean page look like a real scan (blur, folds, ink marks, noise) in a repeatable way. We use its library for some of our damage effects, so our damage is not made up from scratch.</p></div>
+<div class="paper"><a href="https://research.google/pubs/an-overview-of-the-tesseract-ocr-engine/">An Overview of the Tesseract OCR Engine</a><br><span class="why">Ray Smith, ICDAR 2007</span><p>Why we read it: it explains how our first reader works, and why it is a fair starting point. The paper describes the original design. Newer versions added a neural-network reader, which is the kind we run with the Hindi language file.</p></div>
+<h2>Things to keep in mind</h2>
+<ul><li>Only one reader so far.</li><li>Some groups are small (for example 5 pages per damage stage in the ladder set), so small differences mean little.</li><li>The easy, medium and hard label also reflects handwriting and small print, not only damage.</li><li>The pages are made by us. We still need to check how they compare with real scanned deeds.</li></ul>
+<h2>What comes next</h2>
+<ul><li>Run the second reader and the AI page reader on the same pages and add them here.</li><li>Read a few real scanned deeds and place them on the same easy, medium, hard scale.</li><li>Use what we learn to tune the damage, then restart the handwriting step.</li></ul>
+<p class="foot">How scores are worked out: docs/SCORING.md. Raw numbers: docs/results/. This page was made by python -m benchmark.dashboard.</p>
+</main></body></html>
