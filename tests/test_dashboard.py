@@ -89,8 +89,14 @@ class TestPage(unittest.TestCase):
         page = (out / "index.html").read_text(encoding="utf-8")
         self.assertNotIn("cdn", page.lower())
         self.assertNotIn("<script", page.lower())
-        for needle in ("What we did, and why", "Why Tesseract", "Two papers behind this", "Augraphy", "Tesseract OCR Engine", "What comes next"):
+        for needle in ("What we did, and why", "Why Tesseract"):
             self.assertIn(needle, page)
+
+    def test_no_papers_limits_or_next_sections(self):
+        out = self.build([("Tesseract", sample_rows())])
+        page = (out / "index.html").read_text(encoding="utf-8")
+        for gone in ("Two papers behind this", "Things to keep in mind", "What comes next"):
+            self.assertNotIn(gone, page)
 
     def test_no_em_dashes_anywhere(self):
         out = self.build([("Tesseract", sample_rows())])

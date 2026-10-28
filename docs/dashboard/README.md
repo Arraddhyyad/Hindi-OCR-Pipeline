@@ -159,23 +159,5 @@ Other kinds of page we test on.
 - It reads text only, with no AI guessing missing words, so its mistakes show what the page itself does to a reader.
 - It is a starting point, not the best reader. A second reader and an AI model that reads whole pages are set up in the code but not run yet.
 
-## Two papers behind this
-
-- [Augraphy: A Data Augmentation Library for Document Images](https://arxiv.org/abs/2208.14558), Groleau and colleagues, ICDAR 2023. Why we read it: it shows how to make a clean page look like a real scan (blur, folds, ink marks, noise) in a repeatable way. We use its library for some of our damage effects, so our damage is not made up from scratch.
-- [An Overview of the Tesseract OCR Engine](https://research.google/pubs/an-overview-of-the-tesseract-ocr-engine/), Ray Smith, ICDAR 2007. Why we read it: it explains how our first reader works, and why it is a fair starting point. The paper describes the original design. Newer versions added a neural-network reader, which is the kind we run with the Hindi language file.
-
-## Things to keep in mind
-
-- Only one reader so far.
-- Some groups are small (for example 5 pages per damage stage in the ladder set), so small differences mean little.
-- The easy, medium and hard label also reflects handwriting and small print, not only damage.
-- The pages are made by us. We still need to check how they compare with real scanned deeds.
-
-## What comes next
-
-- Run the second reader and the AI page reader on the same pages and add them here.
-- Read a few real scanned deeds and place them on the same easy, medium, hard scale.
-- Use what we learn to tune the damage, then restart the handwriting step.
-
 ---
 *How scores are worked out: docs/SCORING.md. Raw numbers: docs/results/. This page was made by python -m benchmark.dashboard.*

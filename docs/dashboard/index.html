@@ -216,12 +216,5 @@ dl{display:grid;grid-template-columns:max-content 1fr;gap:6px 14px;margin:10px 0
 </details>
 <h2>Why Tesseract as the first reader</h2>
 <ul><li>It is free, runs on a normal laptop, and has a Hindi language file, so anyone on the team can repeat the test.</li><li>It is the usual starting point for OCR, so the numbers mean something to other people.</li><li>It reads text only, with no AI guessing missing words, so its mistakes show what the page itself does to a reader.</li><li>It is a starting point, not the best reader. A second reader and an AI model that reads whole pages are set up in the code but not run yet.</li></ul>
-<h2>Two papers behind this</h2>
-<div class="paper"><a href="https://arxiv.org/abs/2208.14558">Augraphy: A Data Augmentation Library for Document Images</a><br><span class="why">Groleau and colleagues, ICDAR 2023</span><p>Why we read it: it shows how to make a clean page look like a real scan (blur, folds, ink marks, noise) in a repeatable way. We use its library for some of our damage effects, so our damage is not made up from scratch.</p></div>
-<div class="paper"><a href="https://research.google/pubs/an-overview-of-the-tesseract-ocr-engine/">An Overview of the Tesseract OCR Engine</a><br><span class="why">Ray Smith, ICDAR 2007</span><p>Why we read it: it explains how our first reader works, and why it is a fair starting point. The paper describes the original design. Newer versions added a neural-network reader, which is the kind we run with the Hindi language file.</p></div>
-<h2>Things to keep in mind</h2>
-<ul><li>Only one reader so far.</li><li>Some groups are small (for example 5 pages per damage stage in the ladder set), so small differences mean little.</li><li>The easy, medium and hard label also reflects handwriting and small print, not only damage.</li><li>The pages are made by us. We still need to check how they compare with real scanned deeds.</li></ul>
-<h2>What comes next</h2>
-<ul><li>Run the second reader and the AI page reader on the same pages and add them here.</li><li>Read a few real scanned deeds and place them on the same easy, medium, hard scale.</li><li>Use what we learn to tune the damage, then restart the handwriting step.</li></ul>
 <p class="foot">How scores are worked out: docs/SCORING.md. Raw numbers: docs/results/. This page was made by python -m benchmark.dashboard.</p>
 </main></body></html>

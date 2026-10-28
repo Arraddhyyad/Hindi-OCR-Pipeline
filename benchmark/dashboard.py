@@ -225,18 +225,6 @@ def load_gallery(out_dir):
 
 # ---------------------------------------------------------------- the story (shared by the web page and the Markdown page)
 
-PAPERS = [
-    ("Augraphy: A Data Augmentation Library for Document Images", "Groleau and colleagues, ICDAR 2023",
-     "https://arxiv.org/abs/2208.14558",
-     "Why we read it: it shows how to make a clean page look like a real scan (blur, folds, ink marks, noise) in a repeatable way. "
-     "We use its library for some of our damage effects, so our damage is not made up from scratch."),
-    ("An Overview of the Tesseract OCR Engine", "Ray Smith, ICDAR 2007",
-     "https://research.google/pubs/an-overview-of-the-tesseract-ocr-engine/",
-     "Why we read it: it explains how our first reader works, and why it is a fair starting point. "
-     "The paper describes the original design. Newer versions added a neural-network reader, which is the kind we run with the Hindi language file."),
-]
-
-
 def story(readers, gallery, today=None):
     """Return the page as a list of blocks. readers = [(name, rows)]."""
     name, rows = readers[0]
@@ -426,24 +414,6 @@ def story(readers, gallery, today=None):
         "It is a starting point, not the best reader. A second reader and an AI model that reads whole pages are set up in the code but not run yet.",
     ]))
 
-    # ---- papers
-    blocks.append(("h2", "Two papers behind this"))
-    blocks.append(("papers", PAPERS))
-
-    # ---- limits and next
-    blocks.append(("h2", "Things to keep in mind"))
-    blocks.append(("list", [
-        "Only one reader so far.",
-        "Some groups are small (for example 5 pages per damage stage in the ladder set), so small differences mean little.",
-        "The easy, medium and hard label also reflects handwriting and small print, not only damage.",
-        "The pages are made by us. We still need to check how they compare with real scanned deeds.",
-    ]))
-    blocks.append(("h2", "What comes next"))
-    blocks.append(("list", [
-        "Run the second reader and the AI page reader on the same pages and add them here.",
-        "Read a few real scanned deeds and place them on the same easy, medium, hard scale.",
-        "Use what we learn to tune the damage, then restart the handwriting step.",
-    ]))
     blocks.append(("foot", "How scores are worked out: docs/SCORING.md. Raw numbers: docs/results/. This page was made by python -m benchmark.dashboard."))
     return blocks
 
@@ -517,10 +487,6 @@ def render_html(blocks):
             for x in b[2]:
                 one(x)
             o.append("</details>")
-        elif k == "papers":
-            for t, who, url, why in b[1]:
-                o.append(f"<div class=\"paper\"><a href=\"{html.escape(url)}\">{html.escape(t)}</a><br><span class=\"why\">{html.escape(who)}</span>"
-                         f"<p>{html.escape(why)}</p></div>")
         elif k == "foot":
             o.append(f"<p class=\"foot\">{html.escape(b[1])}</p>")
 
@@ -563,10 +529,6 @@ def render_md(blocks):
         elif k == "details":
             out += [f"<details><summary>{b[1]}</summary>", ""]
             out += render_md(b[2]).splitlines() + ["", "</details>", ""]
-        elif k == "papers":
-            for t, who, url, why in b[1]:
-                out += [f"- [{t}]({url}), {who}. {why}"]
-            out += [""]
         elif k == "foot":
             out += ["---", f"*{b[1]}*", ""]
     return "\n".join(out)
