@@ -1,14 +1,16 @@
-runs/
+# python
 __pycache__/
 *.pyc
-.DS_Store
-# add these lines to your existing .gitignore
 .venv/
 .venv-flux/
+
+# generated runs and local data (the benchmark pages live on the shared Drive, see data/README.md)
+runs/
+runs_benchmark/
 flux_data/
 data/*
 !data/README.md
-runs/
-runs_benchmark/
+
+# misc
 *.zip
 .DS_Store
