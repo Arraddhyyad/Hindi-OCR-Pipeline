@@ -1,0 +1,66 @@
+{
+ "ladder": [
+  {
+   "file": "img/ladder_clean.jpg",
+   "caption": "Before any damage (clean copy)",
+   "stage": 0,
+   "name": "clean"
+  },
+  {
+   "file": "img/ladder_1.jpg",
+   "caption": "Stage 1: scan wear",
+   "stage": 1,
+   "name": "scan wear"
+  },
+  {
+   "file": "img/ladder_2.jpg",
+   "caption": "Stage 2: paper ageing",
+   "stage": 2,
+   "name": "paper ageing"
+  },
+  {
+   "file": "img/ladder_3.jpg",
+   "caption": "Stage 3: ink damage",
+   "stage": 3,
+   "name": "ink damage"
+  },
+  {
+   "file": "img/ladder_4.jpg",
+   "caption": "Stage 4: geometry and physical",
+   "stage": 4,
+   "name": "geometry and physical"
+  },
+  {
+   "file": "img/ladder_5.jpg",
+   "caption": "Stage 5: severe",
+   "stage": 5,
+   "name": "severe"
+  }
+ ],
+ "examples": [
+  {
+   "file": "img/ex_printed.jpg",
+   "caption": "Printed text, damage stage 3 (ink damage), rated medium",
+   "stage": 3,
+   "name": "ink damage"
+  },
+  {
+   "file": "img/ex_mixed.jpg",
+   "caption": "Printed with handwritten parts, damage stage 3 (ink damage), rated medium",
+   "stage": 3,
+   "name": "ink damage"
+  },
+  {
+   "file": "img/ex_handwritten.jpg",
+   "caption": "Handwriting-style text, damage stage 3 (ink damage), rated hard",
+   "stage": 3,
+   "name": "ink damage"
+  },
+  {
+   "file": "img/ex_setB.jpg",
+   "caption": "Hard handwriting set: Handwriting-style text, damage stage 4 (geometry and physical), rated hard",
+   "stage": 4,
+   "name": "geometry and physical"
+  }
+ ]
+}
