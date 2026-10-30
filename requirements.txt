@@ -7,3 +7,5 @@ augraphy>=8.2
 numba            # Augraphy dependency
 rapidfuzz>=3.5
 google-genai     # only needed for the Gemini writer / Gemini OCR read-back
+requests>=2.31      # real-document download (realdocs)
+pymupdf>=1.24       # real-document PDF pages (realdocs)

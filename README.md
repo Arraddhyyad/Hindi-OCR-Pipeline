@@ -20,6 +20,8 @@ How well can an OCR reader read these pages? Start here:
 - **Handwriting step (experiments):** `handwriting/`, on its own branch until it works.
 - **The pages used for the benchmark** are not in git, see `data/README.md`.
 
+- Real documents: `python -m realdocs` finds open-licensed Hindi pages, drafts labels and exports them for correction. See [docs/REAL_DOCS_HOWTO.md](docs/REAL_DOCS_HOWTO.md).
+
 ## The pipeline (one file per step in `pipeline/`)
 | Step | File | What happens |
 |---|---|---|

@@ -14,3 +14,7 @@ data/*
 # misc
 *.zip
 .DS_Store
+
+# real-document work folder (downloads, drafts)
+real_work/
+.venv/
