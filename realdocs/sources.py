@@ -127,8 +127,9 @@ def save_sources(path, rows):
         w.writerows(rows)
 
 
-def fetch(queries, out_dir, max_items=40, pause=1.5, log=print):
-    """Search both sources for each query and download open-licensed items. Safe to re-run: known items are skipped."""
+def fetch(queries, out_dir, max_items=40, pause=1.5, log=print, list_only=False):
+    """Search both sources for each query and download open-licensed items. Safe to re-run: known items are skipped.
+    list_only=True prints what would be downloaded (title, licence verdict) and downloads nothing."""
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
     sp = out_dir / "sources.csv"
@@ -153,6 +154,10 @@ def fetch(queries, out_dir, max_items=40, pause=1.5, log=print):
                 skipped.append({"id": ident, "title": title, "why": why, "license_url": lic_url,
                                 "copyright_status": status, "rights": rights, "has_pdf": bool(pdf), "url": url})
                 log(f"skip ({why}): {ident}")
+                continue
+            if list_only:
+                stats["downloaded"] += 1
+                log(f"would get: {ident} | {title[:70]} | {lic_url or status}")
                 continue
             dest = out_dir / "raw" / f"ia_{ident}.pdf"
             try:
@@ -180,6 +185,10 @@ def fetch(queries, out_dir, max_items=40, pause=1.5, log=print):
                 continue
             ext = Path(c["url"].split("?")[0]).suffix.lower() or ".jpg"
             cid = "wc_" + hashlib.sha1(c["page"].encode()).hexdigest()[:10]
+            if list_only:
+                stats["downloaded"] += 1
+                log(f"would get: {cid} | {c['title'][:70]} | {c['license']}")
+                continue
             dest = out_dir / "raw" / (cid + ext)
             try:
                 sha = _download(c["url"], dest)
@@ -195,9 +204,11 @@ def fetch(queries, out_dir, max_items=40, pause=1.5, log=print):
             stats["downloaded"] += 1
             log(f"got {cid}")
             time.sleep(pause)
+        if not list_only:
+            save_sources(sp, rows)
+    if not list_only:
         save_sources(sp, rows)
-    save_sources(sp, rows)
-    if skipped:   # so you can see WHY items were left out and decide for yourself
+    if skipped and not list_only:   # so you can see WHY items were left out and decide for yourself
         with open(out_dir / "skipped.csv", "w", newline="", encoding="utf-8") as f:
             w = csv.DictWriter(f, fieldnames=list(skipped[0]))
             w.writeheader()

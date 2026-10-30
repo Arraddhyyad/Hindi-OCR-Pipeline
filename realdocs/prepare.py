@@ -43,9 +43,10 @@ def pages_from_pdf(path, per_item=3, dpi=200):
         yield i + 1, Image.frombytes("RGB", (pix.width, pix.height), pix.samples)
 
 
-def prepare(work_dir, per_item=3, dpi=200, max_side=2600, min_hindi=0.5, reader=None, log=print):
+def prepare(work_dir, per_item=3, dpi=200, max_side=2600, min_hindi=0.5, reader=None, candidates=6, log=print):
     """Render every raw file into images/<page_id>.jpg and write pages.csv. Returns the number of pages kept.
     Pages whose text is less than `min_hindi` Devanagari are dropped (set 0 to switch the check off).
+    From a PDF, `candidates` pages spread through the book are tried and the first `per_item` Hindi ones are kept.
     `reader(path) -> share` can be swapped in for tests."""
     reader = reader or hindi_share_of_page
     work = Path(work_dir)
@@ -57,8 +58,11 @@ def prepare(work_dir, per_item=3, dpi=200, max_side=2600, min_hindi=0.5, reader=
         if not p.exists():
             log(f"missing file: {p}")
             continue
-        items = pages_from_pdf(p, per_item, dpi) if p.suffix.lower() == ".pdf" else [(1, Image.open(p).convert("RGB"))]
+        items = pages_from_pdf(p, candidates if min_hindi > 0 else per_item, dpi) if p.suffix.lower() == ".pdf" else [(1, Image.open(p).convert("RGB"))]
+        kept = 0
         for page_no, img in items:
+            if kept >= per_item:
+                break
             ink = ink_share(img)
             if not (MIN_INK <= ink <= MAX_INK):
                 log(f"drop {s['id']} p{page_no}: ink {ink:.3f}")
@@ -74,6 +78,7 @@ def prepare(work_dir, per_item=3, dpi=200, max_side=2600, min_hindi=0.5, reader=
                     dest.unlink()
                     log(f"drop {pid}: only {share:.0%} Devanagari")
                     continue
+            kept += 1
             rows.append({"page_id": pid, "source_id": s["id"], "page_no": page_no, "width": img.width,
                          "height": img.height, "ink": round(ink, 4), "path": str(dest)})
     with open(work / "pages.csv", "w", newline="", encoding="utf-8") as f:

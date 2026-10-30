@@ -11,8 +11,9 @@ import argparse
 
 from . import annotate as ann, prepare as prep, review, sources
 
-DEFAULT_QUERIES = ["sale deed", "registry deed", "court order", "gazette notification", "land record",
-                   "बैनामा", "विक्रय पत्र", "अदालत आदेश", "राजपत्र", "भूमि अभिलेख"]
+DEFAULT_QUERIES = ["बैनामा", "विक्रय पत्र", "अदालत आदेश", "राजपत्र", "भूमि अभिलेख", "भारतीय दंड संहिता",
+                   "हिन्दू विधि", "कानून", "न्यायालय", "रजिस्ट्री", "पट्टा", "वसीयत",
+                   "Hindi law book", "Hindi legal", "Hindi court judgment"]
 
 
 def main(argv=None):
@@ -21,6 +22,7 @@ def main(argv=None):
     ap.add_argument("--work", default="real_work")
     ap.add_argument("--query", action="append", help="repeat for several; default is a built-in list")
     ap.add_argument("--max-items", type=int, default=40)
+    ap.add_argument("--list-only", action="store_true", help="fetch: show what would be downloaded, download nothing")
     ap.add_argument("--per-item", type=int, default=3, help="prepare: pages taken from each PDF")
     ap.add_argument("--min-hindi", type=float, default=0.5, help="prepare: drop pages below this Devanagari share (0 = off)")
     ap.add_argument("-n", type=int, default=50, help="pick: how many pages")
@@ -31,7 +33,7 @@ def main(argv=None):
     ap.add_argument("--include-draft", action="store_true", help="build: include unreviewed pages (dry run only)")
     a = ap.parse_args(argv)
     if a.step == "fetch":
-        print(sources.fetch(a.query or DEFAULT_QUERIES, a.work, a.max_items))
+        print(sources.fetch(a.query or DEFAULT_QUERIES, a.work, a.max_items, list_only=a.list_only))
     elif a.step == "prepare":
         print(prep.prepare(a.work, a.per_item, min_hindi=a.min_hindi), "pages ->", a.work + "/contact_sheet.jpg")
     elif a.step == "pick":

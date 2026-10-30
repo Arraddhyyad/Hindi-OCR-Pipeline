@@ -61,6 +61,19 @@ class TestSources(Base):
             st = sources.fetch(["q"], self.tmp / "w", pause=0, log=lambda *_: None)
         self.assertEqual((st["downloaded"], st["failed"]), (0, 1))
 
+    def test_list_only_downloads_nothing(self):
+        def dl(url, dest):
+            raise AssertionError("must not download")
+        seen = []
+        with mock.patch.object(sources, "ia_search", lambda q, rows=50: [{"identifier": "a"}]), \
+             mock.patch.object(sources, "ia_item", lambda i: ("Hindi book", "https://creativecommons.org/publicdomain/zero/1.0/", "", "f.pdf", "")), \
+             mock.patch.object(sources, "commons_search", lambda q, limit=30: []), \
+             mock.patch.object(sources, "_download", dl):
+            st = sources.fetch(["q"], self.tmp / "w", pause=0, log=seen.append, list_only=True)
+        self.assertEqual(st["downloaded"], 1)
+        self.assertTrue(any("would get" in x for x in seen))
+        self.assertFalse((self.tmp / "w" / "sources.csv").exists())
+
     def test_pick_pdf(self):
         files = [{"name": "a.pdf", "size": "90000000"}, {"name": "b.pdf", "size": "5000000"}, {"name": "c.txt", "size": "1"}]
         self.assertEqual(sources.ia_pick_pdf(files, max_mb=60), "b.pdf")
@@ -127,10 +140,10 @@ class TestHindiFilter(Base):
         (work / "raw").mkdir(parents=True)
         make_pdf(work / "raw" / "ia_a.pdf")
         sources.save_sources(work / "sources.csv", [{k: "" for k in sources.FIELDS} | {"id": "ia_a", "local_path": str(work / "raw" / "ia_a.pdf")}])
-        shares = iter([0.9, 0.1, 0.7])
-        n = prepare.prepare(work, per_item=3, dpi=60, reader=lambda p: next(shares), log=lambda *_: None)
-        self.assertEqual(n, 2)
-        self.assertEqual(len(list((work / "images").glob("*.jpg"))), 2)
+        shares = iter([0.9, 0.1, 0.7, 0.8, 0.9, 0.9])
+        n = prepare.prepare(work, per_item=3, dpi=60, candidates=6, reader=lambda p: next(shares), log=lambda *_: None)
+        self.assertEqual(n, 3)    # tries up to 6 candidates, keeps the first 3 that are Hindi
+        self.assertEqual(len(list((work / "images").glob("*.jpg"))), 3)
 
 
 class TestAnnotate(Base):
