@@ -64,11 +64,12 @@ def ia_pick_pdf(files, max_mb=60):
 
 
 def ia_item(identifier):
-    """Metadata for one item: (title, licence_url, copyright status, pdf file name)."""
+    """Metadata for one item: (title, licence_url, copyright status, pdf file name, free-text rights)."""
     m = _get(IA_META.format(identifier)).json()
     md = m.get("metadata", {})
     return (md.get("title", identifier), md.get("licenseurl", ""),
-            md.get("possible-copyright-status", ""), ia_pick_pdf(m.get("files", [])))
+            md.get("possible-copyright-status", ""), ia_pick_pdf(m.get("files", [])),
+            str(md.get("rights", ""))[:200])
 
 
 def looks_hindi(text):
@@ -134,6 +135,7 @@ def fetch(queries, out_dir, max_items=40, pause=1.5, log=print):
     rows = load_sources(sp)
     have = {r["source_url"] for r in rows}
     stats = {"downloaded": 0, "skipped_licence": 0, "skipped_known": 0}
+    skipped = []
     for q in queries:
         for d in ia_search(q):
             ident = d["identifier"]
@@ -143,11 +145,14 @@ def fetch(queries, out_dir, max_items=40, pause=1.5, log=print):
                 continue
             if len(rows) >= max_items:
                 break
-            title, lic_url, status, pdf = ia_item(ident)
+            title, lic_url, status, pdf, rights = ia_item(ident)
             time.sleep(pause)
             if not open_license(lic_url, status) or not pdf:
                 stats["skipped_licence"] += 1
-                log(f"skip (licence or no pdf): {ident}")
+                why = "no pdf under size limit" if open_license(lic_url, status) else "licence not clearly open"
+                skipped.append({"id": ident, "title": title, "why": why, "license_url": lic_url,
+                                "copyright_status": status, "rights": rights, "has_pdf": bool(pdf), "url": url})
+                log(f"skip ({why}): {ident}")
                 continue
             dest = out_dir / "raw" / f"ia_{ident}.pdf"
             try:
@@ -192,4 +197,9 @@ def fetch(queries, out_dir, max_items=40, pause=1.5, log=print):
             time.sleep(pause)
         save_sources(sp, rows)
     save_sources(sp, rows)
+    if skipped:   # so you can see WHY items were left out and decide for yourself
+        with open(out_dir / "skipped.csv", "w", newline="", encoding="utf-8") as f:
+            w = csv.DictWriter(f, fieldnames=list(skipped[0]))
+            w.writeheader()
+            w.writerows(skipped)
     return stats

@@ -55,7 +55,7 @@ class TestSources(Base):
         def dl(url, dest):
             raise RuntimeError("HTTP 403")
         with mock.patch.object(sources, "ia_search", lambda q, rows=50: [{"identifier": "a"}]), \
-             mock.patch.object(sources, "ia_item", lambda i: ("T", "https://creativecommons.org/publicdomain/zero/1.0/", "", "f.pdf")), \
+             mock.patch.object(sources, "ia_item", lambda i: ("T", "https://creativecommons.org/publicdomain/zero/1.0/", "", "f.pdf", "")), \
              mock.patch.object(sources, "commons_search", lambda q, limit=30: []), \
              mock.patch.object(sources, "_download", dl):
             st = sources.fetch(["q"], self.tmp / "w", pause=0, log=lambda *_: None)
@@ -72,7 +72,7 @@ class TestSources(Base):
 
         def item(i):
             lic = "https://creativecommons.org/publicdomain/zero/1.0/" if i == "open1" else ""
-            return ("T " + i, lic, "", "f.pdf")
+            return ("T " + i, lic, "", "f.pdf", "")
 
         def dl(url, dest):
             dest.parent.mkdir(parents=True, exist_ok=True)
@@ -87,6 +87,7 @@ class TestSources(Base):
             st = sources.fetch(["q"], work, pause=0, log=lambda *_: None)
             self.assertEqual((st["downloaded"], st["skipped_licence"]), (1, 1))
             self.assertEqual([r["id"] for r in sources.load_sources(work / "sources.csv")], ["ia_open1"])
+            self.assertIn("licence not clearly open", (work / "skipped.csv").read_text(encoding="utf-8"))
             again = sources.fetch(["q"], work, pause=0, log=lambda *_: None)
             self.assertEqual(again["downloaded"], 0)
             self.assertEqual(again["skipped_known"], 1)
