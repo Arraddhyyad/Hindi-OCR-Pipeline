@@ -10,7 +10,7 @@ from pathlib import Path
 
 import requests
 
-UA = {"User-Agent": "HindiOCR-research/1.0 (university research; polite rate limit)"}
+UA = {"User-Agent": "HindiOCR-research/1.0 (https://github.com/Arraddhyyad/Hindi-OCR-Pipeline; university research, low rate)"}
 IA_SEARCH = "https://archive.org/advancedsearch.php"
 IA_META = "https://archive.org/metadata/{}"
 IA_FILE = "https://archive.org/download/{}/{}"
@@ -32,20 +32,21 @@ def open_license(license_url="", status="", short_name=""):
 
 
 def _get(url, params=None, retries=3, wait=2.0, stream=False):
+    last = "no response"
     for k in range(retries):
         try:
             r = requests.get(url, params=params, headers=UA, timeout=60, stream=stream)
             if r.status_code == 200:
                 return r
+            last = f"HTTP {r.status_code}"
             if r.status_code in (429, 503):
                 time.sleep(wait * (k + 2))
                 continue
-            r.raise_for_status()
-        except requests.RequestException:
-            if k == retries - 1:
-                raise
+            break   # 403, 404 and the like will not get better by retrying
+        except requests.RequestException as e:
+            last = type(e).__name__
             time.sleep(wait * (k + 1))
-    raise RuntimeError(f"gave up on {url}")
+    raise RuntimeError(f"{last} for {url}")
 
 
 def ia_search(query, rows=50):
@@ -70,6 +71,13 @@ def ia_item(identifier):
             md.get("possible-copyright-status", ""), ia_pick_pdf(m.get("files", [])))
 
 
+def looks_hindi(text):
+    """Commons search has no language filter, so keep a file only if its title, description or categories
+    contain Devanagari or name Hindi / Devanagari."""
+    t = (text or "").lower()
+    return any("\u0900" <= ch <= "\u097f" for ch in t) or "hindi" in t or "devanagari" in t
+
+
 def commons_search(query, limit=30):
     """Wikimedia Commons scans matching `query`, with licence info."""
     r = _get(COMMONS, {"action": "query", "format": "json", "generator": "search", "gsrnamespace": 6,
@@ -81,6 +89,9 @@ def commons_search(query, limit=30):
         if not ii.get("mime", "").startswith("image/"):
             continue
         em = ii.get("extmetadata", {})
+        text = p.get("title", "") + " " + (em.get("ImageDescription") or {}).get("value", "") + " " + (em.get("Categories") or {}).get("value", "")
+        if not looks_hindi(text):
+            continue
         out.append({"title": p.get("title", ""), "url": ii.get("thumburl") or ii.get("url"),
                     "page": ii.get("descriptionurl", ""),
                     "license": (em.get("LicenseShortName") or {}).get("value", ""),
@@ -91,10 +102,12 @@ def commons_search(query, limit=30):
 def _download(url, dest):
     dest.parent.mkdir(parents=True, exist_ok=True)
     h = hashlib.sha256()
-    with _get(url, stream=True) as r, open(dest, "wb") as f:
+    tmp = dest.with_suffix(dest.suffix + ".part")
+    with _get(url, stream=True) as r, open(tmp, "wb") as f:
         for chunk in r.iter_content(1 << 16):
             f.write(chunk)
             h.update(chunk)
+    tmp.replace(dest)
     return h.hexdigest()
 
 
@@ -116,6 +129,7 @@ def save_sources(path, rows):
 def fetch(queries, out_dir, max_items=40, pause=1.5, log=print):
     """Search both sources for each query and download open-licensed items. Safe to re-run: known items are skipped."""
     out_dir = Path(out_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
     sp = out_dir / "sources.csv"
     rows = load_sources(sp)
     have = {r["source_url"] for r in rows}
@@ -136,7 +150,12 @@ def fetch(queries, out_dir, max_items=40, pause=1.5, log=print):
                 log(f"skip (licence or no pdf): {ident}")
                 continue
             dest = out_dir / "raw" / f"ia_{ident}.pdf"
-            sha = _download(IA_FILE.format(ident, pdf), dest)
+            try:
+                sha = _download(IA_FILE.format(ident, pdf), dest)
+            except Exception as e:
+                stats["failed"] = stats.get("failed", 0) + 1
+                log(f"download failed, skipping {ident}: {e}")
+                continue
             rows.append({"id": f"ia_{ident}", "source": "internet_archive", "source_url": url,
                          "file_url": IA_FILE.format(ident, pdf), "title": title,
                          "license": status or "open", "license_url": lic_url, "local_path": str(dest),
@@ -157,7 +176,12 @@ def fetch(queries, out_dir, max_items=40, pause=1.5, log=print):
             ext = Path(c["url"].split("?")[0]).suffix.lower() or ".jpg"
             cid = "wc_" + hashlib.sha1(c["page"].encode()).hexdigest()[:10]
             dest = out_dir / "raw" / (cid + ext)
-            sha = _download(c["url"], dest)
+            try:
+                sha = _download(c["url"], dest)
+            except Exception as e:
+                stats["failed"] = stats.get("failed", 0) + 1
+                log(f"download failed, skipping {cid}: {e}")
+                continue
             rows.append({"id": cid, "source": "wikimedia_commons", "source_url": c["page"], "file_url": c["url"],
                          "title": c["title"], "license": c["license"], "license_url": c["license_url"],
                          "local_path": str(dest), "sha256": sha,

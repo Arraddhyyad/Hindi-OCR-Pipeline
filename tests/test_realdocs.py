@@ -46,6 +46,21 @@ class TestSources(Base):
         self.assertFalse(ok("https://creativecommons.org/licenses/by-nc/4.0/"))
         self.assertFalse(ok("", "", "All rights reserved"))
 
+    def test_looks_hindi(self):
+        self.assertTrue(sources.looks_hindi("File:बैनामा 1952.jpg"))
+        self.assertTrue(sources.looks_hindi("A deed in Hindi, 1930"))
+        self.assertFalse(sources.looks_hindi("Deed, 1649, Massachusetts, ink on paper - Concord Museum"))
+
+    def test_one_failed_download_does_not_stop_the_run(self):
+        def dl(url, dest):
+            raise RuntimeError("HTTP 403")
+        with mock.patch.object(sources, "ia_search", lambda q, rows=50: [{"identifier": "a"}]), \
+             mock.patch.object(sources, "ia_item", lambda i: ("T", "https://creativecommons.org/publicdomain/zero/1.0/", "", "f.pdf")), \
+             mock.patch.object(sources, "commons_search", lambda q, limit=30: []), \
+             mock.patch.object(sources, "_download", dl):
+            st = sources.fetch(["q"], self.tmp / "w", pause=0, log=lambda *_: None)
+        self.assertEqual((st["downloaded"], st["failed"]), (0, 1))
+
     def test_pick_pdf(self):
         files = [{"name": "a.pdf", "size": "90000000"}, {"name": "b.pdf", "size": "5000000"}, {"name": "c.txt", "size": "1"}]
         self.assertEqual(sources.ia_pick_pdf(files, max_mb=60), "b.pdf")
