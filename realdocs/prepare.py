@@ -16,6 +16,19 @@ def ink_share(img):
     return float((g < 140).mean())
 
 
+def devanagari_share(text):
+    """Share of letters that are Devanagari (0 to 1). Digits, punctuation and spaces are ignored."""
+    letters = [c for c in text if c.isalpha()]
+    return sum("\u0900" <= c <= "\u097f" for c in letters) / len(letters) if letters else 0.0
+
+
+def hindi_share_of_page(img_path):
+    """Quick Tesseract read of a page, then the Devanagari share of what it found."""
+    import subprocess
+    r = subprocess.run(["tesseract", str(img_path), "-", "-l", "hin+eng", "--psm", "3"], capture_output=True, timeout=300)
+    return devanagari_share(r.stdout.decode("utf-8", "replace"))
+
+
 def pages_from_pdf(path, per_item=3, dpi=200):
     """Yield (page_no, PIL image) for up to `per_item` pages spread through the PDF (skipping the first and last page)."""
     import pymupdf
@@ -30,8 +43,11 @@ def pages_from_pdf(path, per_item=3, dpi=200):
         yield i + 1, Image.frombytes("RGB", (pix.width, pix.height), pix.samples)
 
 
-def prepare(work_dir, per_item=3, dpi=200, max_side=2600, log=print):
-    """Render every raw file into images/<page_id>.jpg and write pages.csv. Returns the number of pages kept."""
+def prepare(work_dir, per_item=3, dpi=200, max_side=2600, min_hindi=0.5, reader=None, log=print):
+    """Render every raw file into images/<page_id>.jpg and write pages.csv. Returns the number of pages kept.
+    Pages whose text is less than `min_hindi` Devanagari are dropped (set 0 to switch the check off).
+    `reader(path) -> share` can be swapped in for tests."""
+    reader = reader or hindi_share_of_page
     work = Path(work_dir)
     out = work / "images"
     out.mkdir(parents=True, exist_ok=True)
@@ -52,6 +68,12 @@ def prepare(work_dir, per_item=3, dpi=200, max_side=2600, log=print):
             pid = f"{s['id']}_p{page_no:03d}"
             dest = out / (pid + ".jpg")
             img.save(dest, quality=92)
+            if min_hindi > 0:
+                share = reader(dest)
+                if share < min_hindi:
+                    dest.unlink()
+                    log(f"drop {pid}: only {share:.0%} Devanagari")
+                    continue
             rows.append({"page_id": pid, "source_id": s["id"], "page_no": page_no, "width": img.width,
                          "height": img.height, "ink": round(ink, 4), "path": str(dest)})
     with open(work / "pages.csv", "w", newline="", encoding="utf-8") as f:

@@ -22,6 +22,7 @@ def main(argv=None):
     ap.add_argument("--query", action="append", help="repeat for several; default is a built-in list")
     ap.add_argument("--max-items", type=int, default=40)
     ap.add_argument("--per-item", type=int, default=3, help="prepare: pages taken from each PDF")
+    ap.add_argument("--min-hindi", type=float, default=0.5, help="prepare: drop pages below this Devanagari share (0 = off)")
     ap.add_argument("-n", type=int, default=50, help="pick: how many pages")
     ap.add_argument("--drop", nargs="*", default=[], help="pick: page ids rejected on the contact sheet")
     ap.add_argument("--lang", default="hin+eng")
@@ -32,7 +33,7 @@ def main(argv=None):
     if a.step == "fetch":
         print(sources.fetch(a.query or DEFAULT_QUERIES, a.work, a.max_items))
     elif a.step == "prepare":
-        print(prep.prepare(a.work, a.per_item), "pages ->", a.work + "/contact_sheet.jpg")
+        print(prep.prepare(a.work, a.per_item, min_hindi=a.min_hindi), "pages ->", a.work + "/contact_sheet.jpg")
     elif a.step == "pick":
         print(len(prep.pick(a.work, a.n, a.drop)), "pages selected")
     elif a.step == "annotate":

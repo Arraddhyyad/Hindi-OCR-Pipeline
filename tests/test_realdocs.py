@@ -105,7 +105,7 @@ class TestPrepare(Base):
         Image.new("RGB", (600, 800), "white").save(blank)
         rows.append({k: "" for k in sources.FIELDS} | {"id": "wc_blank", "local_path": str(blank)})
         sources.save_sources(work / "sources.csv", rows)
-        self.assertEqual(prepare.prepare(work, per_item=3, dpi=60, log=lambda *_: None), 6)
+        self.assertEqual(prepare.prepare(work, per_item=3, dpi=60, min_hindi=0, log=lambda *_: None), 6)
         self.assertTrue((work / "contact_sheet.jpg").exists())
         chosen = prepare.pick(work, n=4)
         self.assertEqual([c["source_id"] for c in chosen], ["ia_a", "ia_b", "ia_a", "ia_b"])
@@ -113,6 +113,24 @@ class TestPrepare(Base):
         again = prepare.pick(work, n=6, drop=[rejected])
         self.assertEqual(len(again), 5)
         self.assertNotIn(rejected, [c["page_id"] for c in again])
+
+
+class TestHindiFilter(Base):
+    def test_devanagari_share(self):
+        self.assertEqual(prepare.devanagari_share("Lok Sabha 123 ..."), 0.0)
+        self.assertEqual(prepare.devanagari_share("बैनामा"), 1.0)
+        self.assertTrue(0.3 < prepare.devanagari_share("बैनामा deed") < 0.8)
+        self.assertEqual(prepare.devanagari_share(""), 0.0)
+
+    def test_prepare_drops_english_pages(self):
+        work = self.tmp / "w"
+        (work / "raw").mkdir(parents=True)
+        make_pdf(work / "raw" / "ia_a.pdf")
+        sources.save_sources(work / "sources.csv", [{k: "" for k in sources.FIELDS} | {"id": "ia_a", "local_path": str(work / "raw" / "ia_a.pdf")}])
+        shares = iter([0.9, 0.1, 0.7])
+        n = prepare.prepare(work, per_item=3, dpi=60, reader=lambda p: next(shares), log=lambda *_: None)
+        self.assertEqual(n, 2)
+        self.assertEqual(len(list((work / "images").glob("*.jpg"))), 2)
 
 
 class TestAnnotate(Base):
