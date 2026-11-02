@@ -66,9 +66,9 @@ def read_cached(backend, image, cache_file):
     return text
 
 
-def score_page(ref, hyp, digits="latin"):
+def score_page(ref, hyp, digits="latin", strip_punct=False):
     """(char errors, char len, word errors, word len, grapheme errors, grapheme len, substitutions, deletions, insertions)."""
-    ref, hyp = normalize(ref, digits), normalize(hyp, digits)
+    ref, hyp = normalize(ref, digits, strip_punct=strip_punct), normalize(hyp, digits, strip_punct=strip_punct)
     sub, dele, ins = edit_ops(ref, hyp)
     cn = len(ref)
     we, wn = word_errors(ref, hyp)
@@ -143,6 +143,7 @@ def main(argv=None):
     ap.add_argument("--clean", action="store_true", help="also score the clean (undamaged) copy of each page")
     ap.add_argument("--limit", type=int, help="first N pages per set (quick test)")
     ap.add_argument("--spread", type=int, help="N pages per set, spread evenly through the set (fair sample for slow readers)")
+    ap.add_argument("--ignore-punct", action="store_true", help="ignore punctuation when scoring (for handwriting)")
     ap.add_argument("--digits", default="latin", choices=["latin", "keep"])
     ap.add_argument("--noise", type=float, default=0.1, help="fake_noisy only")
     ap.add_argument("--model", help="qwen_vl only: Hugging Face model id")
@@ -179,7 +180,7 @@ def main(argv=None):
             if path is None:
                 continue
             hyp = read_cached(backend, path, out / "preds" / backend.name / name / (path.stem + ".txt"))
-            ce, cn, we, wn, ge, gn, c_sub, c_del, c_ins = score_page(ref, hyp, a.digits)
+            ce, cn, we, wn, ge, gn, c_sub, c_del, c_ins = score_page(ref, hyp, a.digits, a.ignore_punct)
             fh = fact_hits(label.get("facts"), hyp, a.digits)
             rows.append({"set": name, "page": stem, "image_kind": kind, **tags(label),
                          "char_err": ce, "char_len": cn, "word_err": we, "word_len": wn, "g_err": ge, "g_len": gn,

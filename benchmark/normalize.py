@@ -7,13 +7,16 @@ _DEV_DIGITS = {ord(c): str(i) for i, c in enumerate("०१२३४५६७८
 _SPACES = re.compile(r"\s+")
 
 
-def normalize(text, digits="latin", strip_zero_width=True):
+def normalize(text, digits="latin", strip_zero_width=True, strip_punct=False):
     """NFC form, no zero-width marks, one space between words.
     digits="latin" turns Devanagari digits into 0-9 (pages use both styles and OCR tools pick either).
-    Use digits="keep" to leave them alone."""
+    Use digits="keep" to leave them alone.
+    strip_punct=True also removes punctuation (danda, commas, quotes): for handwriting, where people punctuate differently."""
     t = unicodedata.normalize("NFC", text or "")
     if strip_zero_width:
         t = t.translate(_ZERO_WIDTH)
     if digits == "latin":
         t = t.translate(_DEV_DIGITS)
+    if strip_punct:
+        t = "".join(" " if unicodedata.category(c).startswith("P") else c for c in t)
     return _SPACES.sub(" ", t).strip()

@@ -10,7 +10,7 @@ import pymupdf
 from PIL import Image, ImageDraw
 
 from benchmark import run as bench_run
-from realdocs import annotate, prepare, review, sources
+from realdocs import annotate, doha, prepare, review, sources
 
 TSV = ("level\tpage_num\tblock_num\tpar_num\tline_num\tword_num\tleft\ttop\twidth\theight\tconf\ttext\n"
        "5\t1\t1\t1\t1\t1\t10\t20\t30\t12\t91.5\tनमस्ते\n"
@@ -144,6 +144,30 @@ class TestHindiFilter(Base):
         n = prepare.prepare(work, per_item=3, dpi=60, candidates=6, reader=lambda p: next(shares), log=lambda *_: None)
         self.assertEqual(n, 3)    # tries up to 6 candidates, keeps the first 3 that are Hindi
         self.assertEqual(len(list((work / "images").glob("*.jpg"))), 3)
+
+
+class TestDoha(Base):
+    def test_build_layout_and_benchmark_scores_it(self):
+        imgs = self.tmp / "imgs"
+        imgs.mkdir()
+        for name in ("F-18-GAYA.jpg", "M-21-JAMMU.jpg"):
+            Image.new("RGB", (300, 400), "white").save(imgs / name)
+        n = doha.build(imgs, self.tmp / "out")
+        self.assertEqual(n, 2)
+        found = list(bench_run.find_pages(self.tmp / "out" / "dataset"))
+        self.assertEqual([f[0] for f in found], ["doc_H0001", "doc_H0002"])
+        lab = json.loads(found[0][1].read_text(encoding="utf-8"))
+        self.assertEqual(lab["transcript"].count("\n"), 5)
+        self.assertNotIn("GAYA", json.dumps(lab))      # no writer place, age or gender anywhere in the label
+        self.assertNotIn("F-18", json.dumps(lab))
+        self.assertFalse(any("GAYA" in f.name for f in (self.tmp / "out" / "dataset" / "test").iterdir()))
+        self.assertTrue((self.tmp / "out" / "check_sheet.jpg").exists())
+
+    def test_ignore_punct_only_when_asked(self):
+        ref = "गुरु गोविंद दोऊ खड़े, काके लागूं पांय।"
+        hyp = "गुरु गोविंद दोऊ खड़े काके लागूं पांय"
+        self.assertGreater(bench_run.score_page(ref, hyp)[0], 0)
+        self.assertEqual(bench_run.score_page(ref, hyp, strip_punct=True)[0], 0)
 
 
 class TestAnnotate(Base):
