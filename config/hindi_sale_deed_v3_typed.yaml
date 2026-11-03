@@ -109,3 +109,7 @@ difficulty:                  # easy / medium / hard label written into every v2 
   thresholds: {easy_max: 0.22, medium_max: 0.46}
   font_difficulty: {Amita: 0.5, Kalam: 0.3, "Tiro Devanagari Hindi": 0.15}
   small_text_px: 22
+
+typography:                  # v3: per-page text variants (src: pipeline/typography.py). Weights are per page; for ablations set one variant to 1.0
+  spacing: {normal: 0.5, uneven: 0.25, tight_messy: 0.25}
+  font_mix: {none: 0.55, mixed: 0.25, small_only: 0.20}

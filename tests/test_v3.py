@@ -47,6 +47,15 @@ class V3(unittest.TestCase):
         self.assertEqual(st.img.shape[:2], (300, 210)); self.assertEqual(st.clean.shape[:2], (300, 210))
         self.assertEqual(st.items[0]["bbox"], [5.0, 5.0, 45.0, 20.0])
 
+    def test_typography(self):
+        from pipeline.typography import choose, word_styles
+        ty = choose({"spacing": {"uneven": 1.0}, "font_mix": {"small_only": 1.0}}, 5)
+        self.assertEqual((ty["spacing"], ty["font_mix"]), ("uneven", "small_only"))
+        st = word_styles(40, ty, 1, "body"); self.assertEqual(len(st), 40); self.assertTrue(all("margin-left" in x for x in st))
+        sizes = [float(x.split("font-size:")[1].rstrip("em")) for x in st if "font-size" in x]; self.assertTrue(sizes and max(sizes) < 1.0)
+        self.assertEqual(word_styles(5, ty, 0, "title"), [None] * 5)                    # titles stay as they are
+        self.assertEqual(word_styles(5, {"spacing": "normal", "font_mix": "none", "seed": "x"}, 0, "body"), [None] * 5)
+
 
 if __name__ == "__main__":
     unittest.main()
