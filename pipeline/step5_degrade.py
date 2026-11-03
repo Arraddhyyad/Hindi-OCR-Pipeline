@@ -9,7 +9,7 @@ from .imaging import place, poly_bbox, rect_polygon
 
 SEV = {"light": 0.6, "medium": 1.0, "heavy": 1.5}
 INKS = {"black": (20, 20, 28), "blueblack": (26, 26, 94), "blue": (23, 51, 143)}
-OCCLUDERS = ("stamp", "stamp_text", "ink_blot", "signature", "thumbprint", "overlap_text", "mark_", "margin_note", "stain", "finger")
+OCCLUDERS = ("stamp", "stamp_text", "ink_blot", "signature", "thumbprint", "overlap_text", "mark_", "margin_note", "stain", "finger", "tape")
 
 
 class State:
@@ -166,10 +166,16 @@ def _tear_profile(lib, rng, nrng, length):
             mask = (rgb.mean(axis=2) > 0.12).astype(np.uint8)
             mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, np.ones((3, 3), np.uint8))
             last = np.array([np.max(np.where(r)[0]) if r.any() else 0 for r in mask], np.float32)
-            last = cv2.medianBlur(last.reshape(-1, 1), 5).ravel() if False else np.convolve(np.pad(last, 2, mode="edge"), np.ones(5) / 5, "valid")
-            _torn_cache[a.name] = last - last.min()
+            if a.era:                       # v3 assets: the sheet does not fill the frame. Use only rows that contain paper and measure loss against the furthest edge
+                rows = np.where(mask.any(axis=1))[0]; last = last[rows[0]:rows[-1] + 1]
+                last = np.convolve(np.pad(last, 2, mode="edge"), np.ones(5) / 5, "valid")
+                _torn_cache[a.name] = last.max() - last
+            else:
+                last = cv2.medianBlur(last.reshape(-1, 1), 5).ravel() if False else np.convolve(np.pad(last, 2, mode="edge"), np.ones(5) / 5, "valid")
+                _torn_cache[a.name] = last - last.min()
         prof = _torn_cache[a.name]
         s = rng.uniform(0.25, 0.55); n = max(8, int(len(prof) * s))
+        if a.era: s = min(s, 0.12 * length / max(1.0, float(prof.max())) * rng.uniform(0.5, 1.0)) * 1.0 if prof.max() > 0 else s     # v3: scale so the deepest bite is at most ~12% of the edge length
         p1 = cv2.resize(prof.reshape(-1, 1), (1, n)).ravel() * s
         reps = int(math.ceil(length / n)) + 1
         full = np.concatenate([p1[::-1] if k % 2 else p1 for k in range(reps)])
@@ -208,6 +214,7 @@ def op_tear(st, rng, nrng, sev, lib):
         prof = _tear_profile(lib, rng, nrng, length)
         base = rng.uniform(0.004, 0.012 * sev + 0.008) * depth_total          # how far in the tear sits
         cut = base + prof                                                      # lost depth along the edge
+        if getattr(st, "cap_tear", False): cut = np.minimum(cut, 0.14 * depth_total)      # v3: big torn-out chunks of the new assets never eat the text block
         if side == "right":    M *= (xx < (W - cut[:, None])).astype(np.float32)
         elif side == "left":   M *= (xx >= cut[:, None]).astype(np.float32)
         elif side == "bottom": M *= (yy < (H - cut[None, :])).astype(np.float32)
@@ -418,7 +425,8 @@ STAGE_SEVERITY = {1: "light", 2: "light", 3: "medium", 4: "heavy", 5: "heavy"}  
 GROUP = {"ink_thickness": (2, .4), "ink_mottling": (3, .4), "low_ink_lines": (3, .35), "stain": (2, .6), "blots": (3, 1.0), "folds": (1, 1.0),
          "bleed_through": (3, .35), "tear": (1, 1.0), "rotate": (1, 1.0), "perspective": (4, .6), "bend": (4, .55), "lighting": (1, .8),
          "shadow": (2, .45), "specks": (1, .8), "contrast": (1, .45), "bad_photocopy": (3, .2), "resample": (1, .6), "blur": (1, .7),
-         "noise": (1, 1.0), "subtle_noise": (1, .5), "jpeg": (1, 1.0)}
+         "noise": (1, 1.0), "subtle_noise": (1, .5), "jpeg": (1, 1.0),
+         "tape": (2, .55), "stain_asset": (2, .7)}          # v3 realism ops (used only when degrade.realism is set)
 
 
 def _present(u, op, k):
@@ -463,6 +471,8 @@ def degrade_page_staged(composed: Image.Image, rec: dict, lib, cfg: dict, key: s
     st = State(img, img.copy() if paired else None, items)
     v = R("scan_bg").choice([0.04, 0.96, 0.5]); st.scan_bg = (v, v, v)
     use_aug = dcfg.get("use_augraphy", True)
+    rl = dcfg.get("realism") or {}                                   # v3 typed-page realism block (absent in older configs = nothing changes)
+    st.cap_tear = bool(rl.get("cap_tear", False))
     hd = dcfg.get("hard") if ((rec.get("page") or {}).get("ext") or {}).get("hard") else None    # v2 hard pages only (config degrade.hard); None otherwise
     def on(op):
         u = R(op + "|on").random()
@@ -477,10 +487,14 @@ def degrade_page_staged(composed: Image.Image, rec: dict, lib, cfg: dict, key: s
     if use_aug and on("low_ink_lines"): _aug(st, "LowInkRandomLines", seed=seed_of("low_ink_lines"))
     if on("stain"): op_stain(st, R("stain"), N("stain"), sev)
     if on("blots"): op_blots(st, R("blots"), N("blots"), sev, lib)
+    if rl.get("stain_assets") and on("stain_asset"):
+        from . import realism; realism.op_stain_assets(st, R("stain_asset"), N("stain_asset"), sev, lib)
     if hd:
         from . import hard_effects
         hard_effects.ink_fade(st, R("hard_fade"), N("hard_fade"), sev); hard_effects.show_through(st, R("hard_st"), sev)
     op_folds(st, R("folds"), N("folds"), sev, lib)                       # always on, strength follows the stage
+    if rl.get("tape") and on("tape"):
+        from . import realism; realism.op_tape(st, R("tape"), N("tape"), sev, lib)
     if hd: hard_effects.cracked_ink(st, R("hard_crack"), sev)
     if use_aug and on("bleed_through"): _aug(st, "BleedThrough", seed=seed_of("bleed_through"))
     op_tear(st, R("tear"), N("tear"), sev, lib)                          # always on

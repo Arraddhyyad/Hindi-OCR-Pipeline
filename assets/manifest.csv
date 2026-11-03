@@ -25,3 +25,37 @@ thumbprints/fingerprint2.png,thumbprints,342,226,alpha,0.39,"21,40,322,186","[11
 thumbprints/fingerprint3.png,thumbprints,240,176,alpha,0.304,"59,7,169,168","[125, 123, 116]",,,
 thumbprints/fingerprint4.png,thumbprints,270,244,alpha,0.403,"40,0,228,230","[117, 119, 111]",,,
 torn_edges/torn_edge_01.jpg,torn_edges,1024,1024,opaque,1.0,"0,0,1023,1023","[182, 171, 152]",,,black bg = outside paper; use luminance as mask; tear on right edge; same paper texture as paper_01
+blots/blot_03_ink_splatter.png,blots,2752,1536,alpha,0.044,"0,0,2751,1535","[121, 125, 134]",,v3,
+footers/footer_01_signature_box.png,footers,1408,768,alpha,0.049,"55,216,1353,556","[34, 34, 34]",,v3,
+headers/header_01_ornate_boxes.png,headers,2816,1536,alpha,0.039,"147,410,2671,998","[36, 36, 36]",,v3,
+headers/header_02_seal_rule_squiggle.png,headers,1408,768,alpha,0.838,"0,0,1407,767","[224, 220, 207]",,v3,contains pseudo-text (non-Hindi letters); listed in skip_assets of the v3 config
+headers/header_03_stamp_paper_green.png,headers,1408,768,alpha,0.616,"0,0,1407,767","[170, 180, 153]",,v3,
+headers/header_04_ornament_band.png,headers,1408,768,alpha,0.587,"0,0,1407,767","[202, 197, 191]",,v3,
+headers/header_05_emblem_rule_text.png,headers,1408,768,alpha,0.067,"58,42,1349,688","[36, 35, 32]",,v3,contains pseudo-Devanagari text; listed in skip_assets of the v3 config
+headers/header_06_stamp_paper_brown.png,headers,1408,768,alpha,0.819,"0,0,1407,767","[200, 179, 153]",,v3,
+headers/header_07_stamp_paper_pink.png,headers,1408,768,alpha,0.685,"0,0,1407,767","[196, 150, 143]",,v3,contains small pseudo-text in the ribbons
+paper/paper_cream_clean.jpg,paper,896,1200,opaque,1.0,"0,0,895,1199","[234, 226, 207]",,v3,aged paper photo with a plain surround; the surround is cropped at load time
+paper/paper_cream_foxed_dots.jpg,paper,800,1328,opaque,1.0,"0,0,799,1327","[246, 232, 196]",,v3,aged paper photo with a plain surround; the surround is cropped at load time
+paper/paper_cream_light.jpg,paper,896,1200,opaque,1.0,"0,0,895,1199","[231, 221, 202]",,v3,aged paper photo with a plain surround; the surround is cropped at load time
+paper/paper_heavily_worn_foxed.jpg,paper,896,1200,opaque,1.0,"0,0,895,1199","[172, 139, 95]",,v3,aged paper photo with a plain surround; the surround is cropped at load time
+paper/paper_water_stained_cracked.jpg,paper,896,1200,opaque,1.0,"0,0,895,1199","[237, 214, 166]",,v3,aged paper photo with a plain surround; the surround is cropped at load time
+paper/paper_yellow_brown_aged.jpg,paper,896,1200,opaque,1.0,"0,0,895,1199","[220, 194, 149]",,v3,aged paper photo with a plain surround; the surround is cropped at load time
+paper/paper_yellow_brown_dark_edges.jpg,paper,896,1200,opaque,1.0,"0,0,895,1199","[217, 192, 148]",,v3,aged paper photo with a plain surround; the surround is cropped at load time
+paper/paper_yellow_ring_stains_card.jpg,paper,1408,768,opaque,1.0,"0,0,1407,767","[233, 200, 138]",,v3,aged paper photo with a plain surround; the surround is cropped at load time
+paper/paper_yellow_stained_border.jpg,paper,816,1312,opaque,1.0,"0,0,815,1311","[220, 192, 142]",,v3,aged paper photo with a plain surround; the surround is cropped at load time
+stains_and_damage/damage_01_burnt_holes.jpg,stains_and_damage,2400,1792,white,0.281,"258,94,2073,1667","[119, 102, 86]",,v3,burnt holes on white; not used by default
+stains_and_damage/stain_01_ink_speckle.png,stains_and_damage,2752,1536,alpha,0.063,"0,0,2751,1535","[204, 202, 197]",,v3,"stain on white; white -> alpha, multiply-blended"
+stains_and_damage/stain_02_coffee_ring.jpg,stains_and_damage,2400,1792,white,0.131,"330,111,1988,1707","[196, 159, 120]",,v3,"stain on white; white -> alpha, multiply-blended"
+stains_and_damage/stain_03_coffee_ring_dark.jpg,stains_and_damage,2400,1792,white,0.128,"377,120,2039,1680","[188, 157, 124]",,v3,"stain on white; white -> alpha, multiply-blended"
+stains_and_damage/stain_04_tea_patch.jpg,stains_and_damage,2400,1792,white,0.505,"144,174,2274,1672","[242, 213, 176]",,v3,"stain on white; white -> alpha, multiply-blended"
+stains_and_damage/stain_05_brown_drops.jpg,stains_and_damage,2400,1792,white,0.1,"178,213,2225,1609","[178, 127, 74]",,v3,"stain on white; white -> alpha, multiply-blended"
+stains_and_damage/stain_06_tea_patch_large.jpg,stains_and_damage,2400,1792,white,0.452,"134,117,2277,1685","[248, 223, 186]",,v3,"stain on white; white -> alpha, multiply-blended"
+tape/tape_01_clear_fresh_on_black.jpg,tape,2528,1696,black,0.05,"132,594,2362,1096","[146, 146, 146]",,v3,"clear tape on black: R = shiny highlight, alpha = tape outline; composited with screen + haze"
+tape/tape_03_yellowed_cross.png,tape,1408,768,alpha,0.485,"0,0,1407,767","[201, 163, 84]",,v3,aged tape cut-out; multiplied with the page and lowers text contrast underneath
+tape/tape_04_old_brittle.png,tape,1408,768,alpha,0.367,"0,0,1407,767","[199, 155, 71]",,v3,aged tape cut-out; multiplied with the page and lowers text contrast underneath
+tape/tape_05_old_peeling.png,tape,1408,768,alpha,0.346,"0,0,1407,767","[190, 150, 80]",,v3,aged tape cut-out; multiplied with the page and lowers text contrast underneath
+torn_edges/torn_01_large_notch_black.jpg,torn_edges,1408,768,opaque,1.0,"0,0,1407,767","[178, 170, 143]",,v3,page photographed on black; black = outside the page; used as a 1-D tear profile
+torn_edges/torn_02_corner_torn_black.jpg,torn_edges,896,1200,opaque,1.0,"0,0,895,1199","[183, 165, 138]",,v3,page photographed on black; black = outside the page; used as a 1-D tear profile
+torn_edges/torn_03_ragged_folded_black.jpg,torn_edges,896,1200,opaque,1.0,"0,0,895,1199","[178, 161, 132]",,v3,page photographed on black; black = outside the page; used as a 1-D tear profile
+torn_edges/torn_04_eaten_bottom_black.jpg,torn_edges,896,1200,opaque,1.0,"0,0,895,1199","[172, 155, 125]",,v3,page photographed on black; black = outside the page; used as a 1-D tear profile
+torn_edges/torn_05_ragged_light_black.jpg,torn_edges,896,1200,opaque,1.0,"0,0,895,1199","[182, 171, 150]",,v3,page photographed on black; black = outside the page; used as a 1-D tear profile

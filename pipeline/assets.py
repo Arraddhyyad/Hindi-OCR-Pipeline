@@ -36,16 +36,71 @@ def tint(im: Image.Image, color) -> Image.Image:
     return Image.fromarray(arr, "RGBA")
 
 
+def crop_surround(im: Image.Image, margin: float = 0.012) -> Image.Image:
+    """Photos of paper often include a plain grey/white surround. Crop to the paper (colour differs from the border strip)."""
+    a = np.asarray(im.convert("RGB")).astype(np.float32); h, w = a.shape[:2]
+    strip = np.concatenate([a[:6].reshape(-1, 3), a[-6:].reshape(-1, 3), a[:, :6].reshape(-1, 3), a[:, -6:].reshape(-1, 3)])
+    bg = np.median(strip, axis=0); d = np.abs(a - bg).max(axis=2)
+    m = d > 22
+    cols, rows = m.mean(axis=0) > 0.5, m.mean(axis=1) > 0.5
+    if not cols.any() or not rows.any():
+        return im
+    x0, x1 = np.where(cols)[0][[0, -1]]; y0, y1 = np.where(rows)[0][[0, -1]]
+    mx, my = int(w * margin), int(h * margin)
+    x0, x1, y0, y1 = x0 + mx, x1 - mx, y0 + my, y1 - my
+    if (x1 - x0) * (y1 - y0) < 0.5 * w * h:
+        return im
+    return im.crop((x0, y0, x1, y1))
+
+
+def tape_from_black(im: Image.Image) -> Image.Image:
+    """Clear tape photographed on black: R=specular highlight (0..255), A=tape silhouette (rough filled outline)."""
+    import cv2
+    g = np.asarray(im.convert("L"))
+    core = (g > 28).astype(np.uint8)
+    core = cv2.morphologyEx(core, cv2.MORPH_CLOSE, np.ones((25, 25), np.uint8))
+    n, lab, stats, _ = cv2.connectedComponentsWithStats(core)
+    if n > 1:
+        k = 1 + int(np.argmax(stats[1:, cv2.CC_STAT_AREA])); core = (lab == k).astype(np.uint8)
+    core = cv2.morphologyEx(core, cv2.MORPH_OPEN, np.ones((5, 5), np.uint8))
+    sil = cv2.GaussianBlur(core.astype(np.float32), (0, 0), 1.5)
+    ys, xs = np.where(core > 0)
+    out = np.dstack([g, g, g, (sil * 255).astype(np.uint8)])
+    return Image.fromarray(out, "RGBA").crop((xs.min(), ys.min(), xs.max() + 1, ys.max() + 1))
+
+
+def clean_alpha_blob(im: Image.Image) -> Image.Image:
+    """Keep only the largest connected opaque blob of a cut-out (removes stray residue left by background removal)."""
+    import cv2
+    a = np.asarray(im).copy()
+    core = (a[..., 3] > 110).astype(np.uint8)
+    n, lab, stats, _ = cv2.connectedComponentsWithStats(core)
+    if n <= 2:
+        return im
+    k = 1 + int(np.argmax(stats[1:, cv2.CC_STAT_AREA]))
+    keep = cv2.dilate((lab == k).astype(np.uint8), np.ones((9, 9), np.uint8))
+    a[..., 3] = (a[..., 3] * keep).astype(np.uint8)
+    return Image.fromarray(a, "RGBA")
+
+
 class Asset:
     def __init__(self, root: Path, row: dict):
         self.path, self.category, self.background = root / row["file"], row["category"], row["background"]
         self.name = Path(row["file"]).stem
+        self.era = row.get("era") or ""
+        self.notes = row.get("notes") or ""
         self._img = None
 
     def load(self) -> Image.Image:
         if self._img is None:
             im = Image.open(self.path)
-            if self.category in ("paper", "torn_edges", "creases"):
+            if self.category == "tape" and self.background == "black":
+                self._img = tape_from_black(im)
+            elif self.category == "tape" and self.background == "alpha":
+                self._img = clean_alpha_blob(crop_to_alpha(im.convert("RGBA"), thr=20, trim=0.0))
+            elif self.category == "paper" and self.era:
+                self._img = crop_surround(im.convert("RGB"))
+            elif self.category in ("paper", "torn_edges", "creases"):
                 self._img = im.convert("RGB")
             elif self.background == "alpha":
                 self._img = crop_to_alpha(im.convert("RGBA"))
@@ -55,9 +110,13 @@ class Asset:
 
 
 class AssetLib:
-    def __init__(self, root, skip=()):
+    """eras: None = only the original assets (rows with an empty `era`). A list such as ["", "v3"] also includes the newer batches,
+    so older configs keep producing exactly the same pages."""
+    def __init__(self, root, skip=(), eras=None):
         self.root = Path(root)
-        rows = [r for r in csv.DictReader(open(self.root / "manifest.csv", encoding="utf-8")) if Path(r["file"]).stem not in set(skip)]
+        allowed = {""} if eras is None else {("" if e in ("", "legacy") else e) for e in eras}
+        rows = [r for r in csv.DictReader(open(self.root / "manifest.csv", encoding="utf-8"))
+                if Path(r["file"]).stem not in set(skip) and (r.get("era") or "") in allowed]
         self.by_cat = {}
         for r in rows:
             self.by_cat.setdefault(r["category"], []).append(Asset(self.root, r))
