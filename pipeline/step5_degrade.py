@@ -426,7 +426,7 @@ GROUP = {"ink_thickness": (2, .4), "ink_mottling": (3, .4), "low_ink_lines": (3,
          "bleed_through": (3, .35), "tear": (1, 1.0), "rotate": (1, 1.0), "perspective": (4, .6), "bend": (4, .55), "lighting": (1, .8),
          "shadow": (2, .45), "specks": (1, .8), "contrast": (1, .45), "bad_photocopy": (3, .2), "resample": (1, .6), "blur": (1, .7),
          "noise": (1, 1.0), "subtle_noise": (1, .5), "jpeg": (1, 1.0),
-         "tape": (2, .55), "stain_asset": (2, .7)}          # v3 realism ops (used only when degrade.realism is set)
+         "tape": (2, .55), "stain_asset": (2, .7), "scan_of_scan": (2, .5), "low_dpi": (2, .4)}          # v3 realism ops (used only when degrade.realism is set)
 
 
 def _present(u, op, k):
@@ -514,6 +514,15 @@ def degrade_page_staged(composed: Image.Image, rec: dict, lib, cfg: dict, key: s
     op_noise(st, R("noise"), N("noise"), sev)
     if use_aug and on("subtle_noise"): _aug(st, "SubtleNoise", seed=seed_of("subtle_noise"))
     q = op_jpeg(st, R("jpeg"), N("jpeg"), sev)
+    if rl.get("scan_of_scan") or rl.get("low_dpi"):                      # v3 stages 8 and 9. `<name>_p` (flat chance, any stage) is for ablation runs
+        from . import realism
+        gate = lambda op: (R(op + "|on").random() < rl[op + "_p"]) if rl.get(op + "_p") is not None else on(op)
+        again = False
+        if rl.get("scan_of_scan") and gate("scan_of_scan"):
+            realism.op_scan_of_scan(st, R("scan_of_scan"), N("scan_of_scan"), sev, rl.get("scan_variant")); again = True
+        if rl.get("low_dpi") and gate("low_dpi"):
+            realism.op_low_dpi(st, R("low_dpi"), N("low_dpi"), sev, rl.get("dpi")); again = True
+        if again: q = op_jpeg(st, R("jpeg2"), N("jpeg2"), sev)
 
     W, H = st.size
     for it in st.items:

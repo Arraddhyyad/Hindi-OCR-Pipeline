@@ -87,7 +87,7 @@ degrade:                     # stage 3, always last
   enabled: true
   paired: true               # also save an aligned clean target (same geometry, no damage)
   use_augraphy: true
-  realism: {tape: true, stain_assets: true, cap_tear: true}     # v3 ops (src: pipeline/realism.py)
+  realism: {tape: true, stain_assets: true, cap_tear: true, scan_of_scan: true, low_dpi: true}     # v3 ops (src: pipeline/realism.py)
   format: png                # png | jpg (jpg applies the sampled JPEG quality)
   severity: {light: 0.3, medium: 0.45, heavy: 0.25}
   guardrails: {provisional: true, min_text_contrast: 20, max_occluded_frac: 0.6, min_sharpness_ratio: 0.01}   # provisional limits, measured and logged only. After calibration set the limits from calibrated_difficulty.yaml and add `enforce: true`: a page past a limit is redone one stage lower
