@@ -138,13 +138,13 @@ def _scan_fax(st, rng, nrng, sev):
 
 def _scan_halftone(st, rng, nrng, sev):
     H, W = st.img.shape[:2]; _grey(st); g = st.img[..., 0]
-    pitch = rng.uniform(3.2, 5.5); th = math.radians(rng.choice([15, 45, 75]))
+    pitch = rng.uniform(2.4, 3.2); th = math.radians(rng.choice([15, 45, 75]))
     yy, xx = np.mgrid[0:H, 0:W].astype(np.float32)
     u = (xx * math.cos(th) + yy * math.sin(th)) * 2 * math.pi / pitch; v = (-xx * math.sin(th) + yy * math.cos(th)) * 2 * math.pi / pitch
-    screen = 0.5 + 0.25 * (np.cos(u) + np.cos(v))
-    ht = 1 / (1 + np.exp(-(g - screen) * 14))                                                              # soft threshold: dots grow with darkness
-    out = cv2.GaussianBlur(ht.astype(np.float32), (0, 0), 0.7)
-    f = rng.uniform(0.62, 0.8); small = cv2.resize(out, (int(W * f), int(H * f)), interpolation=cv2.INTER_LINEAR)       # the rescan beats against the dots: moire
+    screen = 0.5 + rng.uniform(0.10, 0.12) * (np.cos(u) + np.cos(v))
+    ht = 1 / (1 + np.exp(-(g - screen) * 10))                                                              # soft threshold: dots grow with darkness
+    out = cv2.GaussianBlur(ht.astype(np.float32), (0, 0), 0.6)
+    f = rng.uniform(0.85, 0.92); small = cv2.resize(out, (int(W * f), int(H * f)), interpolation=cv2.INTER_LINEAR)       # the rescan beats against the dots: moire
     out = cv2.resize(small, (W, H), interpolation=cv2.INTER_LINEAR)
     st.img = np.repeat(out[..., None], 3, axis=2).astype(np.float32)
 

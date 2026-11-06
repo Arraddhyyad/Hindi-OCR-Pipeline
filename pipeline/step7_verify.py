@@ -62,7 +62,7 @@ def check_content(rec):
     out["amount_digits"] = _check(any(d in txt for d in digs), f"expected one of {sorted(digs)}")
     words = [w for w in rec["words_all"] if w.get("scored")]
     lab = " ".join(w["text"] for w in words).split(); ref = rec["transcript_scored"].split()
-    body_lab = [w["text"] for w in words if w.get("kind") in ("body", "title")]
+    body_lab = [w["text"] for w in words if w.get("kind") in ("body", "title", "table")]
     body_ref = " ".join(p["text"] if isinstance(p, dict) else p for p in rec["paragraphs"]).split()
     out["labels_match_text"] = _check(Counter(lab) == Counter(ref) and Counter(body_lab) == Counter(body_ref),
                                       f"label words={len(lab)} transcript_scored={len(ref)} body {len(body_lab)}/{len(body_ref)}")

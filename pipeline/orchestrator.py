@@ -72,24 +72,30 @@ class PageRunner:
             s2, rec = load_json(f("02_text.json")), load_json(f("03_layout.json")); clean_png = f("03_layout.png").read_bytes()
         else:
             def go():
-                scale, res, doc = 1.0, None, None
-                for attempt in range(1, cfg["fit"]["max_attempts"] + 1):
-                    target = max(150, int(estimate_words(st, (st.ext or {}).get("fs_target", 24.0)) * scale))
-                    if (st.ext or {}).get("compact") and self.writer.name == "template":     # v2 very large type: short-form deed
-                        from .step2_text import write_compact
-                        doc = write_compact(g, random.Random(seed * 31 + attempt))
-                    else:
-                        doc = self.writer.write(g, random.Random(seed * 31 + attempt), target)
-                    miss = missing_facts(g, doc); assert not miss, f"facts missing: {miss}"
-                    hand = None
-                    if st.ext and st.ext.get("hand"):                                  # v2 handwriting: which words are written by hand
-                        from .handwriting import hybrid_marks
-                        h = st.ext["hand"]
-                        if h["mode"] == "handwritten": hand = {(pi, wi) for pi, p_ in enumerate(doc.paragraphs) for wi in range(len(p_["text"].replace("\n", " ").split()))}
-                        else: hand = hybrid_marks(doc.paragraphs, g, cfg["handwriting"]["hybrid_facts"], cfg["handwriting"].get("hybrid_digits", True))
-                    res = self.r.fit_and_render(doc.paragraphs, st, hand=hand)
-                    if res.status == "ok": break
-                    scale *= 0.8 if res.status == "overflow" else 1.25
+                scale, res, doc = (0.65 if (st.ext or {}).get("tables") else 1.0), None, None      # v4: tables take a fixed share of the page
+                for phase in (0, 1):                  # v4: if a table page cannot be fitted, the second phase drops the tables and fits it as plain text
+                    for attempt in range(1, cfg["fit"]["max_attempts"] + 1):
+                        target = max(150, int(estimate_words(st, (st.ext or {}).get("fs_target", 24.0)) * scale))
+                        if (st.ext or {}).get("compact") and self.writer.name == "template":     # v2 very large type: short-form deed
+                            from .step2_text import write_compact
+                            doc = write_compact(g, random.Random(seed * 31 + attempt))
+                        elif ((st.ext or {}).get("dense") or (st.ext or {}).get("tables")) and self.writer.name == "template":     # v4: dense small print and/or tables
+                            from .step2_text import write_dense
+                            doc = write_dense(g, random.Random(seed * 31 + attempt), target, bool(st.ext.get("dense")), bool(st.ext.get("tables")))
+                        else:
+                            doc = self.writer.write(g, random.Random(seed * 31 + attempt), target)
+                        miss = missing_facts(g, doc); assert not miss, f"facts missing: {miss}"
+                        hand = None
+                        if st.ext and st.ext.get("hand"):                                  # v2 handwriting: which words are written by hand
+                            from .handwriting import hybrid_marks
+                            h = st.ext["hand"]
+                            if h["mode"] == "handwritten": hand = {(pi, wi) for pi, p_ in enumerate(doc.paragraphs) for wi in range(len(p_["text"].replace("\n", " ").split()))}
+                            else: hand = hybrid_marks(doc.paragraphs, g, cfg["handwriting"]["hybrid_facts"], cfg["handwriting"].get("hybrid_digits", True))
+                        res = self.r.fit_and_render(doc.paragraphs, st, hand=hand)
+                        if res.status == "ok": break
+                        scale *= (min(0.85, 0.9 / res.fill) if (res.fill and (st.ext or {}).get("tables")) else 0.8) if res.status == "overflow" else 1.25
+                    if res.status == "ok" or not (st.ext or {}).get("tables"): break
+                    st.ext["tables"] = False; scale = 1.0
                 return doc, res, attempt
             doc, res, attempt = timed(2, go)
             s2 = {"id": pid, "writer": doc.writer, "paragraphs": doc.paragraphs, "transcript": doc.text, "attempts": attempt, "fit_status": res.status}

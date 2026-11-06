@@ -74,7 +74,27 @@ def build_html(paras, st: PageStyle, hand=None) -> str:
     gaps, hcount = [], [0]
     if hand and st.ext and st.ext.get("hand"):          # extra space before each hand word: laid out here so the fit already accounts for it
         h_ = st.ext["hand"]; gaps = [q["gap"] for q in word_params_(h_["seed"], len(hand), h_["jitter"], 1.0, h_.get("messy", 1.0))]
+    wcount = [0]
     for i, p in enumerate(paras):
+        if p["kind"] == "table":    # v4: a real HTML table. Cell words are .w spans in reading order, so labels and boxes stay in step with p["text"]
+            rows_html = []
+            for ri, row in enumerate(p["rows"]):
+                tds = []
+                for ci, cell in enumerate(row):
+                    toks = []
+                    for w in cell.split():
+                        if hand is not None and (i, wcount[0]) in hand:
+                            g_ = gaps[hcount[0]]; hcount[0] += 1
+                            toks.append(f'<span class="w hw" style="margin-left:{g_:.3f}em">{_esc(w)}</span>')
+                        else:
+                            toks.append(f'<span class="w">{_esc(w)}</span>')
+                        wcount[0] += 1
+                    tag = "th" if ri == 0 else "td"
+                    tds.append(f'<{tag} style="width:{p["cols"][ci] * 100:.0f}%">{" ".join(toks)}</{tag}>')
+                rows_html.append("<tr>" + "".join(tds) + "</tr>")
+            wcount[0] = 0
+            body.append(f'<div class="p tbl" data-i="{i}" data-kind="table"><table>{"".join(rows_html)}</table></div>')
+            continue
         if hand:   # v2: words written by hand get class hw (inline-block so they can be tilted and shifted by the browser)
             toks = []
             for wi, w in enumerate(p["text"].replace("\n", " ").split()):
@@ -114,6 +134,7 @@ body{{width:{st.width}px;height:{st.height}px;position:relative;overflow:hidden;
 #body{{position:absolute;left:{st.margin_l}px;top:{top}px;width:{cw}px}}
 .p{{margin:0 0 var(--gap) 0;font-size:var(--fs);line-height:var(--lh);text-align:{st.align};text-justify:inter-word;hyphens:none;word-spacing:0}}
 .p:last-child{{margin-bottom:0}}
+.tbl{{margin:.2em auto .9em auto;width:92%}}.tbl table{{width:100%;border-collapse:collapse;table-layout:fixed;font-size:.92em;line-height:1.35}}.tbl th,.tbl td{{border:1.4px solid {st.ink};padding:.22em .5em;text-align:left;vertical-align:top;word-spacing:0}}.tbl th{{font-weight:700;background:rgba(0,0,0,.06)}}
 .title{{text-align:center;font-weight:700;font-size:1.65em;text-decoration:underline;text-underline-offset:.2em;margin-bottom:calc(var(--gap)*1.3)}}
 #sig{{position:absolute;left:{st.margin_l}px;top:{sig_top}px;width:{cw}px;height:{st.sig_h}px;display:flex;justify-content:space-between;align-items:flex-end;gap:36px}}
 .sg{{flex:1;text-align:center;font-size:calc(var(--fs)*.85)}}
@@ -338,6 +359,20 @@ def plan_page(cfg, rng, seed=None) -> PageStyle:
         from .typography import choose
         t = choose(ty, seed); st.ext = {**(st.ext or {"faces": []}), "typo": t}
         if t["spacing"] != "normal" and (st.ext.get("page_style") in (None, "printed")): st.align = "left"      # ragged: justification would even the gaps out again
+    dn = cfg.get("dense")
+    if dn:                                              # v4: dense small-print pages and table pages (own random stream)
+        import random as _rd
+        drng = _rd.Random(f"dense|{seed}"); ext = st.ext or {"faces": []}
+        is_dense = drng.random() < dn["p"]; has_tables = drng.random() < (dn["tables_p_dense"] if is_dense else dn["tables_p"])
+        ext["dense"] = is_dense; ext["tables"] = has_tables
+        if is_dense and ext.get("typo") and ext["typo"]["font_mix"] == "small_only": ext["typo"] = {**ext["typo"], "font_mix": "none"}     # already small print: no extra shrinking
+        if is_dense:                                    # tiny justified type, tight lines, narrower margins, as in printed bank forms
+            lo, hi = dn["fs"]; ext["fs_range"] = [[lo, hi, 1.0, dn["line_height"]]]
+            st.fs_min = lo - 1; st.align = "justify"
+            st.margin_l = drng.randint(*dn["margin"]); st.margin_r = drng.randint(*dn["margin"])
+        elif has_tables:                                # tables need room: keep the type size moderate on table pages
+            ext["fs_range"] = [dn["tables_fs"] + [1.0]]
+        st.ext = ext
     sp = cfg.get("size_plan")
     if sp:                                              # v2 only. Own random stream, so no draw of the original sampling is disturbed
         import random

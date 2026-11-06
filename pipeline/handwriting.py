@@ -44,11 +44,12 @@ def word_params(key, n, jit, fs, messy=1.0):
     """Deterministic per-word jitter for n words. `key` is a string (page seed based) so the stream is private to this feature.
     `messy` (per page, about 0.7-1.8) scales how untidy the writer is. gap = extra space before the word (em), skew = slant change (deg)."""
     rng = random.Random(key); ph = rng.uniform(0, 6.28); out = []; m = messy
+    ph2 = rng.uniform(0, 6.28); wave = jit.get("alpha_wave", 0.0); faint = jit.get("faint_p", 0.0)
     for i in range(n):
         out.append({"angle": max(-2.5 * jit["angle_deg"] * m, min(2.5 * jit["angle_deg"] * m, rng.gauss(0, jit["angle_deg"] * m))),
                     "dy": rng.gauss(0, jit["dy_em"] * m * fs) + 0.5 * jit["dy_em"] * m * fs * math.sin(i * 0.35 + ph),
                     "scale": rng.uniform(1 - jit["scale"] * m, 1 + jit["scale"] * m),
-                    "alpha": rng.uniform(*jit["alpha"]),
+                    "alpha": max(0.25, min(1.0, rng.uniform(*jit["alpha"]) * (1 - wave * (0.5 + 0.5 * math.sin(i * 0.045 + ph2))) * (rng.uniform(0.45, 0.7) if rng.random() < faint else 1.0))),
                     "skew": max(-8.0, min(8.0, rng.gauss(0, jit.get("skew_deg", 0.0) * m))),
                     "gap": rng.uniform(0, jit.get("gap_em", 0.0) * m)})
     return out
