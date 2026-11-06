@@ -85,7 +85,13 @@ def build_html(paras, st: PageStyle, hand=None) -> str:
                     toks.append(f'<span class="w">{_esc(w)}</span>')
             words = " ".join(toks)
         else:
-            words = " ".join(f'<span class="w">{_esc(w)}</span>' for w in p["text"].replace("\n", " ").split())
+            toks_ = p["text"].replace("\n", " ").split(); ty = (st.ext or {}).get("typo")
+            if ty:                                           # v3 typography variants (pipeline/typography.py); absent from every older config
+                from .typography import word_styles
+                sts = word_styles(len(toks_), ty, i, p["kind"])
+                words = " ".join(f'<span class="w"' + (f' style="{c_}"' if c_ else "") + f'>{_esc(w)}</span>' for w, c_ in zip(toks_, sts))
+            else:
+                words = " ".join(f'<span class="w">{_esc(w)}</span>' for w in toks_)
         body.append(f'<p class="p {p["kind"]}" data-i="{i}" data-kind="{p["kind"]}">{words}</p>')
     cw = st.width - st.margin_l - st.margin_r
     hand_css = ""
@@ -327,6 +333,11 @@ def plan_page(cfg, rng, seed=None) -> PageStyle:
                 st.font_family, st.font_weight, st.ink, st.align = hf["family"], hf["weight"], hink, "left"     # handwriting is ragged, never justified
                 ext["fs_range"] = hw.get("fs")
         st.ext = ext
+    ty = cfg.get("typography")
+    if ty:                                              # v3 only: spacing and font-size variants for printed pages (own random stream)
+        from .typography import choose
+        t = choose(ty, seed); st.ext = {**(st.ext or {"faces": []}), "typo": t}
+        if t["spacing"] != "normal" and (st.ext.get("page_style") in (None, "printed")): st.align = "left"      # ragged: justification would even the gaps out again
     sp = cfg.get("size_plan")
     if sp:                                              # v2 only. Own random stream, so no draw of the original sampling is disturbed
         import random

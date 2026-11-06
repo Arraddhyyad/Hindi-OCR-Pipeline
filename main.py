@@ -22,7 +22,7 @@ def _init(cfg, run_dir):
     import logging
     from pipeline.step3_layout import Renderer
     from pipeline.assets import AssetLib
-    _W["cfg"] = cfg; _W["run_dir"] = run_dir; _W["lib"] = AssetLib(cfg["assets_dir"], skip=cfg.get("skip_assets", []))
+    _W["cfg"] = cfg; _W["run_dir"] = run_dir; _W["lib"] = AssetLib(cfg["assets_dir"], skip=cfg.get("skip_assets", []), eras=cfg.get("asset_eras"))
     _W["r"] = Renderer().__enter__()
     from pipeline.orchestrator import PageRunner
     log = logging.getLogger("docgen"); log.setLevel(logging.DEBUG)
@@ -101,7 +101,7 @@ def cmd_verify(a):
     from pipeline import step7_verify as vf
     from pipeline.assets import AssetLib
     run_dir = ROOT / "runs" / a.run_id; snap = run_dir / "config.snapshot.yaml"; cfg = load_config(snap if snap.exists() else a.config)
-    lib = AssetLib(cfg["assets_dir"], skip=cfg.get("skip_assets", [])); names = {x.name for cat in lib.by_cat.values() for x in cat}
+    lib = AssetLib(cfg["assets_dir"], skip=cfg.get("skip_assets", []), eras=cfg.get("asset_eras")); names = {x.name for cat in lib.by_cat.values() for x in cat}
     s = vf.verify_run(run_dir, cfg, names); bad = s["pages"] - s["pages_passed"]
     print(f"{s['pages_passed']}/{s['pages']} pages pass all checks. Report: {run_dir / 'verify_report.md'}")
     for f in s["failures"][:10]: print(" FAIL", f["id"], f["failed"])

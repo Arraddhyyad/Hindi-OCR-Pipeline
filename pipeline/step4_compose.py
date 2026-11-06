@@ -16,6 +16,7 @@ DIGITS = set("0123456789०१२३४५६७८९")
 DEFAULTS = {
     "header_mode": {"banner": 0.6, "letterhead": 0.25, "none": 0.15},
     "footer_mode": {"endorsement": 0.5, "line": 0.2, "none": 0.3},
+    "header_stretch": 0.0,
     "p_overlap_text": 0.45, "p_text_stamp": 0.65, "stamps": {1: 0.35, 2: 0.4, 3: 0.25},
     "marks": [2, 5], "notes": [0, 3], "p_thumb_party": 0.7, "p_thumb_witness": 0.15,
     "mark_types": {"oval": 0.3, "tick": 0.2, "cross": 0.12, "underline": 0.2, "strike": 0.06, "arrow": 0.12},
@@ -95,10 +96,14 @@ def add_header(c: Ctx):
         a = rng.choice(c.lib.get("headers")); im = a.load()
         w = cw * rng.uniform(0.55, 0.95); h = im.height * w / im.width
         text_h = c.fs * 1.45 + 14
-        if h > zone_h - text_h - 8:
+        stretch = None
+        if cfg.get("header_stretch", 0.0) and rng.random() < cfg["header_stretch"]:        # v3: a printed band across the full width of the text block, like real stamp-paper and letterheads
+            w = cw * rng.uniform(0.94, 1.02); h = max(60.0, zone_h - text_h - 14) * rng.uniform(0.8, 1.0)
+            stretch = (w, h)
+        elif h > zone_h - text_h - 8:
             h = zone_h - text_h - 8; w = h * im.width / im.height
-        cx = (c.cx0 + c.cx1) / 2 + rng.uniform(-25, 25); cy = top + 6 + h / 2
-        poly = place(c.base, im, cx, cy, width=w, angle=rng.uniform(-0.7, 0.7), opacity=rng.uniform(0.85, 1.0))
+        cx = (c.cx0 + c.cx1) / 2 + (rng.uniform(-8, 8) if stretch else rng.uniform(-25, 25)); cy = top + 6 + h / 2
+        poly = place(c.base, im, cx, cy, width=w, stretch=stretch, angle=rng.uniform(-0.7, 0.7), opacity=rng.uniform(0.85, 1.0))
         c.add("header_banner", poly, False, asset=a.name)
         y_text = top + 6 + h + 8; info["asset"] = a.name
         reg = g["registration"]
