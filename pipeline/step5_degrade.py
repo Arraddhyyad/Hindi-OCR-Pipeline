@@ -71,7 +71,7 @@ def _blot_assets(lib):
 
 def op_blots(st, rng, nrng, sev, lib):
     H, W = st.img.shape[:2]
-    words = [it for it in st.items if it.get("kind") == "body"]
+    words = [it for it in st.items if it.get("kind") in ("body", "table")]
     n = rng.randint(3, 8) if sev < 1.2 else rng.randint(6, 16)
     assets = _blot_assets(lib); made = 0
     for i in range(n):
@@ -402,7 +402,7 @@ def degrade_page(composed: Image.Image, rec: dict, lib, cfg: dict, rng: random.R
         it["visible"] = round(min(1.0, iw * ih / area) * it.get("torn_visible", 1.0), 2)
     occ = [e for e in st.items if str(e.get("type", "")).startswith(OCCLUDERS)]
     for it in st.items:
-        if it.get("kind") in ("body", "title", "sig_label", "header_text", "footer_text", "correction") and it.get("scored"):
+        if it.get("kind") in ("body", "table", "title", "sig_label", "header_text", "footer_text", "correction") and it.get("scored"):
             b = it["bbox"]; area = max(1e-6, (b[2] - b[0]) * (b[3] - b[1])); mx = 0.0
             for e in occ:
                 e_b = e["bbox"]; ix = max(0, min(b[2], e_b[2]) - max(b[0], e_b[0])); iy = max(0, min(b[3], e_b[3]) - max(b[1], e_b[1]))
@@ -443,12 +443,12 @@ def measure(final_rgb: np.ndarray, target_rgb, items) -> dict:
         g = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY); paper = cv2.medianBlur(g, 31); diff = paper.astype(np.int16) - g.astype(np.int16)
         m = np.zeros(g.shape, np.uint8)
         for w in items:
-            if w.get("kind") == "body" and w.get("scored"): cv2.fillPoly(m, [np.round(np.asarray(w["poly"])).astype(np.int32)], 1)
+            if w.get("kind") in ("body", "table") and w.get("scored"): cv2.fillPoly(m, [np.round(np.asarray(w["poly"])).astype(np.int32)], 1)
         sel = m > 0
         if sel.sum() < 100: return None
         lap = cv2.Laplacian(g, cv2.CV_32F)
         return float(np.percentile(diff[sel], 97)), float(lap[sel].var())
-    body = [w for w in items if w.get("kind") == "body" and w.get("scored")]
+    body = [w for w in items if w.get("kind") in ("body", "table") and w.get("scored")]
     out = {"occluded_frac": round(sum(1 for w in body if w.get("occluded", 0) > 0.05 or w.get("visible", 1) < 0.99) / max(1, len(body)), 3)}
     a = stats(final_rgb)
     if a: out["text_contrast"] = round(a[0], 1)
@@ -531,7 +531,7 @@ def degrade_page_staged(composed: Image.Image, rec: dict, lib, cfg: dict, key: s
         it["visible"] = round(min(1.0, iw * ih / area) * it.get("torn_visible", 1.0), 2)
     occ = [e for e in st.items if str(e.get("type", "")).startswith(OCCLUDERS)]
     for it in st.items:
-        if it.get("kind") in ("body", "title", "sig_label", "header_text", "footer_text", "correction") and it.get("scored"):
+        if it.get("kind") in ("body", "table", "title", "sig_label", "header_text", "footer_text", "correction") and it.get("scored"):
             b = it["bbox"]; area = max(1e-6, (b[2] - b[0]) * (b[3] - b[1])); mx = 0.0
             for e in occ:
                 e_b = e["bbox"]; ix = max(0, min(b[2], e_b[2]) - max(b[0], e_b[0])); iy = max(0, min(b[3], e_b[3]) - max(b[1], e_b[1]))
